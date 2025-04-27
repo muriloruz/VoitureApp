@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:voiture/cadastro.dart';
 
 void main() {
   runApp(const Login());
@@ -12,15 +13,15 @@ class Login extends StatelessWidget {
     return MaterialApp(
       title: 'Tela de Acesso',
       theme: ThemeData(
-        primarySwatch: Colors.grey,
-        brightness: Brightness.dark,
+        brightness: Brightness.light,
         inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
-            borderSide: BorderSide.none,
+            borderSide: BorderSide(color: Colors.black),
+            
           ),
           filled: true,
-          fillColor: Colors.grey.shade800,
+          fillColor: Colors.white,
           hintStyle: TextStyle(color: Colors.grey.shade400),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
@@ -36,8 +37,8 @@ class Login extends StatelessWidget {
         ),
         outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
-            foregroundColor: Colors.white,
-            side: const BorderSide(color: Colors.white),
+            foregroundColor: Colors.black,
+            side: const BorderSide(color: Colors.black),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8.0),
             ),
@@ -87,10 +88,10 @@ Widget build(BuildContext context) {
                 const SizedBox(height: 8.0),
                 Text(
                   'Com o e-mail e senha',
-                  style: TextStyle(color: Colors.grey.shade400),
+                  style: TextStyle(color: Colors.black),
                 ),
                 const SizedBox(height: 24.0),
-                const Text('Digite seu e-mail', style: TextStyle(color: Colors.grey)),
+                const Text('Digite seu e-mail', style: TextStyle(color: Colors.black)),
                 const SizedBox(height: 8.0),
                 const TextField(
                   keyboardType: TextInputType.emailAddress,
@@ -99,7 +100,7 @@ Widget build(BuildContext context) {
                   ),
                 ),
                 const SizedBox(height: 16.0),
-                const Text('Digite sua senha', style: TextStyle(color: Colors.grey)),
+                const Text('Digite sua senha', style: TextStyle(color: Colors.black)),
                 const SizedBox(height: 8.0),
                 TextField(
                   obscureText: _obscureText,
@@ -108,7 +109,7 @@ Widget build(BuildContext context) {
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscureText ? Icons.visibility : Icons.visibility_off,
-                        color: Colors.grey.shade400,
+                        color: Colors.black,
                       ),
                       onPressed: () {
                         setState(() {
@@ -128,12 +129,12 @@ Widget build(BuildContext context) {
                           value: false,
                           onChanged: (bool? value) {},
                         ),
-                        const Text('Lembrar senha', style: TextStyle(color: Colors.grey)),
+                        const Text('Lembrar senha', style: TextStyle(color: Colors.black)),
                       ],
                     ),
                     TextButton(
                       onPressed: () {},
-                      child: const Text('Esqueci minha senha', style: TextStyle(color: Colors.white)),
+                      child: const Text('Esqueci minha senha', style: TextStyle(color: Colors.black)),
                     ),
                   ],
                 ),
@@ -144,7 +145,12 @@ Widget build(BuildContext context) {
                 ),
                 const SizedBox(height: 16.0),
                 OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Cadastro()),
+                );
+              },
                   child: const Text('Cadastrar'),
                 ),
               ],

@@ -13,9 +13,17 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.13.1
   flutter_lints: ^5.0.0
 
 flutter:
   uses-material-design: true
   assets: 
     - assets/
+
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/voiturelogo.jpg"
+  adaptive_icon_background: "#000000"
