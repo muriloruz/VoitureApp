@@ -1,6 +1,7 @@
 class Usuario {
   static Usuario? _instance;
 
+  String _token;
   String _cpf;
   String _nome;
   String _email;
@@ -9,7 +10,7 @@ class Usuario {
   int _idEnd;
   int _id;
 
-  Usuario._(this._cpf, this._nome, this._email, this._password, this._numeroResid, this._idEnd, this._id);
+  Usuario._(this._cpf, this._nome, this._email, this._password, this._numeroResid, this._idEnd, this._id, this._token);
 
   static Usuario get instance {
     _instance ??= Usuario._(
@@ -20,6 +21,7 @@ class Usuario {
       "",
       0,
       0,
+      "",
     );
     return _instance!;
   }
@@ -29,6 +31,7 @@ class Usuario {
   String get email => _email;
   String get password => _password;
   String get numeroResid => _numeroResid;
+  String get token => _token;
   int get idEnd => _idEnd;
   int get id => _id;
 
@@ -59,8 +62,10 @@ class Usuario {
   set id(int novoId) {
     _id = novoId;
   }
-
-  void setDados(String cpf, String nome, String email, String password, String numeroResid, int idEnd, int id) {
+  set token(String novoToken){
+    _token = novoToken;
+  }
+  void setDados(String cpf, String nome, String email, String password, String numeroResid, int idEnd, int id, String token) {
     _cpf = cpf;
     _nome = nome;
     _email = email;
@@ -68,5 +73,6 @@ class Usuario {
     _numeroResid = numeroResid;
     _idEnd = idEnd;
     _id = id;
+    _token = token;
   }
 }

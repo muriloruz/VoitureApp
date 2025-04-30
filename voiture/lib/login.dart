@@ -1,6 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:voiture/cadastro.dart';
-
+import 'package:voiture/Modelos/usuario.dart';
+import 'package:voiture/Controlador/ReqResp.dart';
+import 'package:http/http.dart' as http;
 void main() {
   runApp(const Login());
 }
@@ -52,6 +55,9 @@ class Login extends StatelessWidget {
   }
 }
 
+
+
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -61,6 +67,20 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
    bool _obscureText = true;
+   final TextEditingController _emailController = TextEditingController(); 
+   final TextEditingController _passwordController = TextEditingController();
+   final dio = Dio();
+   
+
+
+@override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+ 
 
  @override
 Widget build(BuildContext context) {
@@ -93,7 +113,8 @@ Widget build(BuildContext context) {
                 const SizedBox(height: 24.0),
                 const Text('Digite seu e-mail', style: TextStyle(color: Colors.black)),
                 const SizedBox(height: 8.0),
-                const TextField(
+                TextField(
+                  controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     hintText: 'E-mail',
@@ -103,6 +124,7 @@ Widget build(BuildContext context) {
                 const Text('Digite sua senha', style: TextStyle(color: Colors.black)),
                 const SizedBox(height: 8.0),
                 TextField(
+                  controller: _passwordController,
                   obscureText: _obscureText,
                   decoration: InputDecoration(
                     hintText: 'Senha',
@@ -140,7 +162,35 @@ Widget build(BuildContext context) {
                 ),
                 const SizedBox(height: 32.0),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () async{
+                    
+                    /*final resposta = await dio.get("https://192.168.86.220:7101/usuario/all");
+                    print(resposta);*/
+                    
+                 try{
+
+                  
+                    ReqResp r = new ReqResp("https://192.168.86.220:7101",httpClient: createIgnoringCertificateClient());
+                    
+                    
+                    final String email = _emailController.text;
+                    final String password = _passwordController.text;
+
+                    final Map<String, dynamic> loginData = {
+                     'email': email,
+                     'password': password,
+                    };
+
+                    final http.Response response = await r.post('usuario/login',loginData);
+                    if(response.statusCode == 200){
+                        print("foi");
+                    }else{
+                      print(response.body);
+                    }
+                  }catch(err){
+                    print(err);
+                  }  
+                  },
                   child: const Text('Acessar'),
                 ),
                 const SizedBox(height: 16.0),
