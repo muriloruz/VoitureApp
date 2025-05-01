@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:voiture/login.dart';
+import 'package:voiture/perfilUser.dart';
 
 void main() {
   runApp(const MenuPrincipal());
@@ -134,7 +135,7 @@ class MenuScreen extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
+              ),
             ),
             const SizedBox(height: 8),
             Padding(padding: const EdgeInsets.all(16.0),
@@ -156,12 +157,13 @@ class MenuScreen extends StatelessWidget {
                       SizedBox(width: 16),
                       Text('Favoritos', style: TextStyle(color: Colors.black)),
                     ],
+                    ),
                   ),
                 ),
               ),
             ),
-            ),
             const Spacer(), // Empurra a barra de navegação para baixo
+            
             Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
@@ -221,7 +223,10 @@ class MenuScreen extends StatelessWidget {
                   ),
                   TextButton.icon(
                       onPressed: () {
-                        // Ação ao pressionar "Perfil"
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const PerfilUser())
+                        );
                         print('Perfil pressionado');
                       },
                       icon: const Column(
@@ -235,7 +240,7 @@ class MenuScreen extends StatelessWidget {
                   )
                 ],
               ),
-    )
+            )
 
           ],
           

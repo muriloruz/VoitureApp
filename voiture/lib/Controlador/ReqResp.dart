@@ -37,8 +37,9 @@ class ReqResp {
     return await httpClient.delete(uri, headers: allHeaders); 
   }
 
-  Future<http.Response> getByName(String name, {Map<String, String>? headers}) async {
-    return await get('users?name=$name', headers: headers);
+  Future<http.Response> getByName(String endpoint, String id, {Map<String, String>? headers}) async {
+    
+    return await get('$endpoint$id', headers: headers);
   }
 
   Future<http.Response> postByName(String name, dynamic body, {Map<String, String>? headers}) async {
@@ -53,7 +54,30 @@ class ReqResp {
   Future<http.Response> deleteByName(String name, {Map<String, String>? headers}) async {
     return await delete('users/$name', headers: headers);
   }
+  Map<String, dynamic>? decodeJwtToken(String token) {
+  if (token.isEmpty) {
+    return null;
+  }
+
+  try {
+    final parts = token.split('.');
+    if (parts.length != 3) {
+      return null; // Token JWT inválido
+    }
+
+    final payloadBase64 = parts[1];
+    final normalizedPayload = base64.normalize(payloadBase64);
+    final payloadString = utf8.decode(base64.decode(normalizedPayload));
+    final payload = json.decode(payloadString);
+
+    return payload;
+  } catch (e) {
+    print('Erro ao decodificar o token JWT: $e');
+    return null;
+  }
 }
+}
+
 
 
 http.Client createIgnoringCertificateClient() {
