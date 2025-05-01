@@ -1,9 +1,13 @@
+import 'dart:convert';
+
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:voiture/cadastro.dart';
 import 'package:voiture/Modelos/usuario.dart';
 import 'package:voiture/Controlador/ReqResp.dart';
 import 'package:http/http.dart' as http;
+import 'package:voiture/menuPrincipal.dart';
 void main() {
   runApp(const Login());
 }
@@ -55,8 +59,7 @@ class Login extends StatelessWidget {
   }
 }
 
-
-
+ 
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -70,17 +73,15 @@ class _LoginPageState extends State<LoginPage> {
    final TextEditingController _emailController = TextEditingController(); 
    final TextEditingController _passwordController = TextEditingController();
    final dio = Dio();
-   
-
-
-@override
+   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
+    
   }
-
- 
 
  @override
 Widget build(BuildContext context) {
@@ -170,7 +171,7 @@ Widget build(BuildContext context) {
                  try{
 
                   
-                    ReqResp r = new ReqResp("https://192.168.86.220:7101",httpClient: createIgnoringCertificateClient());
+                    ReqResp r = new ReqResp("https://192.168.18.61:7101",httpClient: createIgnoringCertificateClient());
                     
                     
                     final String email = _emailController.text;
@@ -183,12 +184,84 @@ Widget build(BuildContext context) {
 
                     final http.Response response = await r.post('usuario/login',loginData);
                     if(response.statusCode == 200){
-                        print("foi");
-                    }else{
-                      print(response.body);
+                        Usuario user = Usuario.instance;
+                        user.token=response.body;
+                        Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const MenuPrincipal()),
+                      );
+                        await Future.delayed(Duration(seconds: 2));
+                    }else if(response.statusCode == 400){
+                      
+                        String rBody = response.body;
+                        Map<String, dynamic> jsonResp = json.decode(rBody);
+                        Map<String, dynamic> errs = jsonResp['errors'];
+                        List emailErros = errs['Email'];
+                        List senhaErros = errs['Password'];
+                        showDialog(
+                          context: context,
+                          builder:  (context) => AlertDialog(
+                            title: Text("Erro de login"),
+                            content: Text("Verifique se digitou todos os campos"),
+                            actions: [
+                              TextButton(
+                                child: Text('Ok'),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                            ],
+                          ),
+                        );
+                        await Future.delayed(Duration(seconds: 2));
+                    }else if(response.statusCode == 404){
+                        if(response.body == "Email não encontrado"){
+                          showDialog(
+                          context: context,
+                          builder:  (context) => AlertDialog(
+                            title: Text("Erro de login"),
+                            content: Text("Verifique o campo de Email"),
+                            actions: [
+                              TextButton(
+                                child: Text('Ok'),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                            ],
+                          ),
+                        );
+                        await Future.delayed(Duration(seconds: 2));
+                        }else{
+                          showDialog(
+                          context: context,
+                          builder:  (context) => AlertDialog(
+                            title: Text("Erro de login"),
+                            content: Text("Verifique o campo de Senha"),
+                            actions: [
+                              TextButton(
+                                child: Text('Ok'),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                            ],
+                          ),
+                        );
+                        await Future.delayed(Duration(seconds: 2));
+                        }
                     }
                   }catch(err){
-                    print(err);
+                     if(err is TypeError){
+                      showDialog(
+                          context: context,
+                          builder:  (context) => AlertDialog(
+                            title: Text("Erro de login"),
+                            content: Text("Verifique se digitou todos os campos"),
+                            actions: [
+                              TextButton(
+                                child: Text('Ok'),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                            ],
+                          ),
+                        );
+                        await Future.delayed(Duration(seconds: 2));
+                    }
                   }  
                   },
                   child: const Text('Acessar'),
