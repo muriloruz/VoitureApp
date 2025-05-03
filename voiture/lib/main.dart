@@ -83,7 +83,7 @@ class GetStartedPage extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              child: const Text('Começar'),
+              child: const Text('Entrar'),
             ),
           ],
         ),

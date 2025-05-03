@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:voiture/PerfilVend.dart';
 import 'package:voiture/menuPrincipal.dart';
 import 'package:http/io_client.dart' as io;
+import 'package:voiture/perfilUser.dart';
 
 /// Executa a requisição e retorna o JSON do usuário
 Future<String> fetchUsuario() async {
@@ -14,17 +15,17 @@ Future<String> fetchUsuario() async {
     "https://192.168.18.61:7101",
     httpClient: createIgnoringCertificateClient(),
   );
-  //final dcPayload = r.decodeJwtToken('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAxNTdlYTMzLTE2ZTQtNGZlNC1iYzA0LWVkY2UzZDkxNmVhYyIsInVzZXJuYW1lIjoibXVyaWxvcnV6NjRAZ21haWwuY29tIiwibm9tZSI6Im11bGlybyIsImV4cCI6MTc0NjY0NjQ3MX0.zpIzPqFuURvLjUtbIxxuJ2yXaFFe3LtZiY1QCbdsNsU');
+  //final payload = r.decodeJwtToken('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBhMDkxYmI4LTAzMmQtNGM3ZC1iYjhjLWU2OTJlMDk1MDUyZiIsInVzZXJuYW1lIjoic3NhQGdtYWlsLmNvbSIsIm5vbWUiOiJqb2FvIiwiZXhwIjoxNzQ2NzIwMDE4fQ.d_yrFWahmkF7czMaLMr8BIHhYlYo5afGnoUL036rzs4');
   final dcPayload = r.decodeJwtToken(user.token);
   final id = dcPayload.toString().split(":")[1].split(",")[0].trim();
-  final resp = await r.getByName("usuario/single/", id);
+  final resp = await r.getByName("Vendedor/", id);
   return resp.body;
 }
 
-void main() => runApp(const PerfilUser());
+void main() => runApp(const PerfilVend());
 
-class PerfilUser extends StatelessWidget {
-  const PerfilUser({super.key});
+class PerfilVend extends StatelessWidget {
+  const PerfilVend ({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -118,19 +119,36 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 _buildField('Nome', userJson['nome']),
                 const SizedBox(height: 12),
-                _buildField('E‑mail', userJson['email']),
+                _buildField('E‑mail', userJson['userName']),
                 const SizedBox(height: 12),
-                _buildField('Celular', userJson['celular'] ?? '(não informado)'),
+                _buildField('Celular', userJson['telefoneVend'] ?? '(não informado)'),
                 const SizedBox(height: 12),
-                _buildField('CPF', userJson['cpf']),
+                _buildField('CNPJ', userJson['cnpj']),
                 const Spacer(),
-                SizedBox(
-                  width: double.infinity,
+                Row(
+        children: [
+                Expanded(
                   child: ElevatedButton(
-                    onPressed: () {},
-                    child: const Text('Alterar dados'),
+                    onPressed: () {
+                      // Ação ao salvar
+                    },
+                    child: const Text('Salvar'),
                   ),
                 ),
+                const SizedBox(width: 16.0),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Ação para forma de pagamento
+                    },
+                    
+                    child: const Text('Forma de pagamento',style: TextStyle(fontSize: 12.0)),
+                    
+                    
+                  ),
+                ),
+              ],
+      		),
               ],
             ),
           );

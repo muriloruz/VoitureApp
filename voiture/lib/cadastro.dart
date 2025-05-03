@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:voiture/Modelos/usuario.dart';
+import 'package:voiture/cadastroEndVend.dart';
 import 'package:voiture/login.dart';
-
+import 'package:voiture/Controlador/ReqResp.dart';
+import 'package:http/http.dart' as http;
 void main() {
   runApp(const Cadastro());
 }
@@ -73,7 +76,12 @@ class _CadastroScreenState extends State<CadastroScreen> {
   bool _obscureSenha = true;
   bool _obscureConfirmarSenha = true;
   String _tipoUsuario = 'cliente'; // Valor inicial
-  TextEditingController _cpfCnpjController = TextEditingController();
+  final TextEditingController _cpfCnpjController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController(); 
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _rPasswordController = TextEditingController();
+  final TextEditingController _nomeController = TextEditingController();
+
 
   @override
   void dispose() {
@@ -87,9 +95,11 @@ class _CadastroScreenState extends State<CadastroScreen> {
       return TextFormField(
         controller: _cpfCnpjController,
         keyboardType: TextInputType.number,
+        maxLength: 11,
         decoration: const InputDecoration(
           labelText: 'CPF',
           hintText: 'Digite seu CPF',
+          
         ),
         style: const TextStyle(color: Colors.black), // Cor do texto digitado
       );
@@ -97,6 +107,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
       return TextFormField(
         controller: _cpfCnpjController,
         keyboardType: TextInputType.number,
+        maxLength: 14,
         decoration: const InputDecoration(
           labelText: 'CNPJ',
           hintText: 'Digite seu CNPJ',
@@ -138,7 +149,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
                     Padding(
                       padding: EdgeInsets.zero,
                       child: Container(
-                        color: Colors.transparent,
+                        color: Colors.black,
                         child: Padding(
                           padding: EdgeInsets.zero,
                           
@@ -151,8 +162,9 @@ class _CadastroScreenState extends State<CadastroScreen> {
                     ),
                     const SizedBox(height: 8.0),
                     TextFormField(
+                      controller: _nomeController,
                       decoration: const InputDecoration(
-                        hintText: 'Jorge de Souza',
+                        hintText: 'Seu Nome',
                       ),
                       style: const TextStyle(color: Colors.black), // Cor do texto digitado
                     ),
@@ -162,9 +174,10 @@ class _CadastroScreenState extends State<CadastroScreen> {
                     ),
                     const SizedBox(height: 8.0),
                     TextFormField(
+                      controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: const InputDecoration(
-                        hintText: 'jorge@gmail.com',
+                        hintText: 'seu@email.aqui',
                       ),
                       style: const TextStyle(color: Colors.black), // Cor do texto digitado
                     ),
@@ -174,6 +187,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
                     ),
                     const SizedBox(height: 8.0),
                     TextFormField(
+                      controller: _passwordController,
                       obscureText: _obscureSenha,
                       decoration: InputDecoration(
                         hintText: '*******',
@@ -198,6 +212,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
                     ),
                     const SizedBox(height: 8.0),
                     TextFormField(
+                      controller: _rPasswordController,
                       obscureText: _obscureConfirmarSenha,
                       decoration: InputDecoration(
                         hintText: '*******',
@@ -253,9 +268,159 @@ class _CadastroScreenState extends State<CadastroScreen> {
                     ),
                     const SizedBox(height: 32.0),
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async{
                         if (_formKey.currentState!.validate()) {
-                          // Lógica de cadastro aqui
+                          
+                          if(_tipoUsuario == "cliente"){
+                            Usuario user = Usuario.instance;
+                            user.nome = _nomeController.text;
+                            user.email = _emailController.text;
+                            user.cpf = _cpfCnpjController.text;
+                            user.password = _passwordController.text;
+                            if(_passwordController.text == _rPasswordController.text){
+                              if(user.nome == "" || user.cpf == "" || user.email == "" || user.password == ""){
+                                showDialog(
+                                context: context,
+                                builder:  (context) => AlertDialog(
+                                  title: Text("Erro de cadastro."),
+                                  content: Text("Verifique se todos os campos foram preenchidos."),
+                                  actions: [
+                                    TextButton(
+                                      child: Text('Ok'),
+                                      onPressed: () => Navigator.pop(context),
+                                    ),
+                                  ],
+                                ),
+                              );
+                              }else{
+                                
+                                void cad() async{
+                                  ReqResp r = ReqResp("https://192.168.18.61:7101",httpClient: createIgnoringCertificateClient());
+                                  Map<String,dynamic> body = {
+                                    'UserName': _emailController.text,
+                                    'Nome': _nomeController.text,
+                                    'cpf': _cpfCnpjController.text,
+                                    'Password': _passwordController.text,
+                                    'ConfSenha': _rPasswordController.text,
+                                    'email': _emailController.text
+                                  };
+                                  http.Response resposta = await r.post("usuario/",body);
+                                  if(resposta.statusCode == 200){
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => const Login())
+                                    );
+                                  }if(resposta.statusCode == 400){
+                                    showDialog(
+                                      context: context,
+                                      builder:  (context) => AlertDialog(
+                                      title: Text("Erro de cadastro."),
+                                      content: Text("Verifique se todos os campos foram preenchidos."),
+                                      actions: [
+                                        TextButton(
+                                          child: Text('Ok'),
+                                          onPressed: () => Navigator.pop(context),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                  }else if(resposta.statusCode == 500){
+                                    showDialog(
+                                      context: context,
+                                      builder:  (context) => AlertDialog(
+                                      title: Text("Erro de cadastro."),
+                                      content: Text("Email já cadastrado."),
+                                      actions: [
+                                        TextButton(
+                                          child: Text('Ok'),
+                                          onPressed: () => Navigator.pop(context),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                  }
+                                }
+                                cad();
+                              }
+                              
+                            }else{
+                              showDialog(
+                                context: context,
+                                builder:  (context) => AlertDialog(
+                                  title: Text("Erro de cadastro."),
+                                  content: Text("Os campos referentes as senhas não são iguais."),
+                                  actions: [
+                                    TextButton(
+                                      child: Text('Ok'),
+                                      onPressed: () => Navigator.pop(context),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                          }else{
+                            Usuario user = Usuario.instance;
+                            user.nome = _nomeController.text;
+                            user.email = _emailController.text;
+                            user.cpf = _cpfCnpjController.text;
+                            user.password = _passwordController.text;
+                            if(_passwordController.text == _rPasswordController.text){
+                              if(user.nome == "" || user.cpf == "" || user.email == "" || user.password == ""){
+                                showDialog(
+                                context: context,
+                                builder:  (context) => AlertDialog(
+                                  title: Text("Erro de cadastro."),
+                                  content: Text("Verifique se todos os campos foram preenchidos."),
+                                  actions: [
+                                    TextButton(
+                                      child: Text('Ok'),
+                                      onPressed: () => Navigator.pop(context),
+                                    ),
+                                  ],
+                                ),
+                              );
+                              }else{
+                                ReqResp r = new ReqResp("https://192.168.18.61:7101",httpClient: createIgnoringCertificateClient());
+                                http.Response resp = await r.getByName("vendedor/verEmail/",user.email);
+                                if(resp.statusCode == 200){
+                                  showDialog(
+                                      context: context,
+                                      builder:  (context) => AlertDialog(
+                                      title: Text("Erro de cadastro."),
+                                      content: Text("Email já cadastrado."),
+                                      actions: [
+                                        TextButton(
+                                          child: Text('Ok'),
+                                          onPressed: () => Navigator.pop(context),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }else{
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => const CadastroEndVend())
+                                    );
+                                }
+                              }
+                              
+                            }else{
+                              showDialog(
+                                context: context,
+                                builder:  (context) => AlertDialog(
+                                  title: Text("Erro de cadastro."),
+                                  content: Text("Os campos referentes as senhas não são iguais."),
+                                  actions: [
+                                    TextButton(
+                                      child: Text('Ok'),
+                                      onPressed: () => Navigator.pop(context),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                              
+                          }
                           print('Cadastrar!');
                         } else {
                           _scrollController.animateTo(

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart' as io;
+import 'package:voiture/Modelos/usuario.dart';
 
 class ReqResp {
   final String baseUrl;
@@ -10,7 +11,7 @@ class ReqResp {
 
   ReqResp(this.baseUrl, {http.Client? httpClient})
       : httpClient = httpClient ?? http.Client(); 
-
+  
   Future<http.Response> get(String endpoint, {Map<String, String>? headers}) async {
     final uri = Uri.parse('$baseUrl/$endpoint');
     final allHeaders = {...defaultHeaders, ...?headers};
@@ -76,7 +77,13 @@ class ReqResp {
     return null;
   }
 }
+
+
+
 }
+
+
+
 
 
 

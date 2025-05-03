@@ -11,7 +11,28 @@ import 'package:voiture/menuPrincipal.dart';
 void main() {
   runApp(const Login());
 }
-
+void getToken() async{
+  ReqResp r = new ReqResp("https://192.168.18.61:7101",httpClient: createIgnoringCertificateClient());
+  //final dcPaylod = r.decodeJwtToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBhMDkxYmI4LTAzMmQtNGM3ZC1iYjhjLWU2OTJlMDk1MDUyZiIsInVzZXJuYW1lIjoic3NhQGdtYWlsLmNvbSIsIm5vbWUiOiJqb2FvIiwiZXhwIjoxNzQ2NjUyNDYyfQ.wcUHWa3O_ScnPHGgtaPY_4ZcaezLV3ZdLxWPLxw2OWA");
+  final dcPaylod = r.decodeJwtToken(user.token);
+  String resp = dcPaylod.toString();
+  var priQuebra = resp.split(":");
+  var segQuebra = priQuebra[1].split(",");
+  try{
+    final http.Response resposta = await r.getByName("usuario/single/",segQuebra[0].trim());
+    Map<String, dynamic> jsonData = jsonDecode(resposta.body);
+    String id = jsonData['id'];
+    //print(id);
+    user.id = id;
+    
+  }catch(err){
+    final http.Response resposta = await r.getByName("Vendedor/",segQuebra[0].trim());
+    Map<String, dynamic> jsonData = jsonDecode(resposta.body);
+    String id = jsonData['id'];
+    user.id = id;
+  }
+  
+}
 class Login extends StatelessWidget {
   const Login({super.key});
 
@@ -186,6 +207,7 @@ Widget build(BuildContext context) {
                     if(response.statusCode == 200){
                         Usuario user = Usuario.instance;
                         user.token=response.body;
+                        getToken();
                         Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => const MenuPrincipal()),
@@ -194,10 +216,6 @@ Widget build(BuildContext context) {
                     }else if(response.statusCode == 400){
                       
                         String rBody = response.body;
-                        Map<String, dynamic> jsonResp = json.decode(rBody);
-                        Map<String, dynamic> errs = jsonResp['errors'];
-                        List emailErros = errs['Email'];
-                        List senhaErros = errs['Password'];
                         showDialog(
                           context: context,
                           builder:  (context) => AlertDialog(

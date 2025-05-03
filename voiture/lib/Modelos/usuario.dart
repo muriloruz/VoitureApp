@@ -7,10 +7,11 @@ class Usuario {
   String _email;
   String _password;
   String _numeroResid;
-  int _idEnd;
-  int _id;
+  String _role;
+  String _dados;
+  String _id;
 
-  Usuario._(this._cpf, this._nome, this._email, this._password, this._numeroResid, this._idEnd, this._id, this._token);
+  Usuario._(this._cpf, this._nome, this._email, this._password, this._numeroResid, this._id, this._token,this._role,this._dados);
 
   static Usuario get instance {
     _instance ??= Usuario._(
@@ -19,9 +20,10 @@ class Usuario {
       "",
       "",
       "",
-      0,
-      0,
       "",
+      "",
+      "",
+      ""
     );
     return _instance!;
   }
@@ -32,13 +34,17 @@ class Usuario {
   String get password => _password;
   String get numeroResid => _numeroResid;
   String get token => _token;
-  int get idEnd => _idEnd;
-  int get id => _id;
+  String get id => _id;
+  String get role => _role;
+  String get dados => _dados;
 
   set cpf(String novoCpf) {
     _cpf = novoCpf;
   }
 
+  set dados(String novoDado) {
+    _cpf = novoDado;
+  }
   set nome(String novoNome) {
     _nome = novoNome;
   }
@@ -55,24 +61,27 @@ class Usuario {
     _numeroResid = novoNumeroResid;
   }
 
-  set idEnd(int novoIdEnd) {
-    _idEnd = novoIdEnd;
+  set role(String novaRole){
+    _role = novaRole;
   }
 
-  set id(int novoId) {
+  set id(String novoId) {
     _id = novoId;
   }
+
   set token(String novoToken){
     _token = novoToken;
   }
-  void setDados(String cpf, String nome, String email, String password, String numeroResid, int idEnd, int id, String token) {
+
+  
+  void setDados(String cpf, String nome, String email, String password, String numeroResid,  String id, String token, String role) {
     _cpf = cpf;
     _nome = nome;
     _email = email;
     _password = password;
     _numeroResid = numeroResid;
-    _idEnd = idEnd;
     _id = id;
     _token = token;
+    _role = role;
   }
 }

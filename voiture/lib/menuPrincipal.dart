@@ -1,7 +1,56 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:voiture/Controlador/ReqResp.dart';
+import 'package:voiture/Modelos/usuario.dart';
+import 'package:voiture/PerfilVend.dart';
 import 'package:voiture/login.dart';
 import 'package:voiture/perfilUser.dart';
+import 'package:http/http.dart' as http;
 
+
+Usuario user = Usuario.instance;
+
+Future<String> getToken() async{
+  ReqResp r = new ReqResp("https://192.168.18.61:7101",httpClient: createIgnoringCertificateClient());
+  //final dcPaylod = r.decodeJwtToken();
+  final dcPaylod = r.decodeJwtToken(user.token);
+  String resp = dcPaylod.toString();
+  var priQuebra = resp.split(":");
+  var segQuebra = priQuebra[1].split(",");
+  try{
+    final http.Response resposta = await r.getByName("usuario/single/",segQuebra[0].trim());
+    Map<String, dynamic> jsonData = jsonDecode(resposta.body);
+    String id = jsonData['id'];
+    //print(id);
+    return id;
+    
+    
+  }catch(err){
+    final http.Response resposta = await r.getByName("Vendedor/",segQuebra[0].trim());
+    Map<String, dynamic> jsonData = jsonDecode(resposta.body);
+    String id = jsonData['id'];
+    return id;
+    
+  }
+  
+}
+
+
+void getRoleUser() async{
+    
+    var id = await getToken();
+
+    print(id);
+    ReqResp r = new ReqResp("https://192.168.18.61:7101",httpClient: createIgnoringCertificateClient());
+    final http.Response resp = await r.getByName("usuario/getRole/",id);
+    print(resp.statusCode);
+    print(resp.body.toString());
+    Map<String, dynamic> jsonResponse = jsonDecode(resp.body.toString());
+    var roles = jsonResponse['roles'][0];
+    print(roles);
+    user.role = roles;
+}
 void main() {
   runApp(const MenuPrincipal());
 }
@@ -31,6 +80,8 @@ class MenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
+    getRoleUser();
     return Scaffold(
       appBar: AppBar(
         
@@ -43,7 +94,10 @@ class MenuScreen extends StatelessWidget {
           ),
           onPressed: () {
             // Ação ao pressionar o botão de voltar
-            MaterialPageRoute(builder: (context) => const Login());
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const Login()),
+            );
           },
         ),
         
@@ -122,7 +176,21 @@ class MenuScreen extends StatelessWidget {
               child: InkWell(
                 onTap: () {
                   // Ação ao pressionar "Anunciar peças"
-                  print('Anunciar peças pressionado');
+                  if(user.role == 'USUARIO'){
+                    showDialog(
+                          context: context,
+                          builder:  (context) => AlertDialog(
+                            title: Text("Você não tem acesso a essa função."),
+                            content: Text("Apenas usuários vendedores podem criar anúncios de peças."),
+                            actions: [
+                              TextButton(
+                                child: Text('Ok'),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                            ],
+                          ),
+                        );
+                  }
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -166,14 +234,7 @@ class MenuScreen extends StatelessWidget {
             
             Container(
                 width: double.infinity,
-                decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(
-                    color: Colors.black,
-                    width: 2.0,
-                  ),
-                ),
-              ),
+                color: Colors.black,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -187,8 +248,8 @@ class MenuScreen extends StatelessWidget {
                     icon: const Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.home_outlined, color: Colors.black),
-                        Text('Menu', style: TextStyle(color: Colors.black)),
+                        Icon(Icons.home_outlined, color: Colors.white),
+                        Text('Menu', style: TextStyle(color: Colors.white)),
                       ],
                     ),
                     label: const SizedBox.shrink(),
@@ -201,8 +262,8 @@ class MenuScreen extends StatelessWidget {
                     icon: const Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.list_alt_outlined, color: Colors.black),
-                        Text('Pedidos', style: TextStyle(color: Colors.black)),
+                        Icon(Icons.list_alt_outlined, color: Colors.white),
+                        Text('Pedidos', style: TextStyle(color: Colors.white)),
                       ],
                     ),
                     label: const SizedBox.shrink(),
@@ -215,25 +276,34 @@ class MenuScreen extends StatelessWidget {
                     icon: const Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.shopping_cart_outlined, color: Colors.black),
-                        Text('Carrinho', style: TextStyle(color: Colors.black)),
+                        Icon(Icons.shopping_cart_outlined, color: Colors.white),
+                        Text('Carrinho', style: TextStyle(color: Colors.white)),
                       ],
                     ),
                     label: const SizedBox.shrink(),
                   ),
                   TextButton.icon(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const PerfilUser())
-                        );
+                        print(user.role);
+                        if(user.role == 'USUARIO'){
+                            Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const PerfilUser())
+                          );
+                        }
+                        else{
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const PerfilVend())
+                          );
+                        }
                         print('Perfil pressionado');
                       },
                       icon: const Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                      Icon(Icons.person, color: Colors.black),
-                      Text('Perfil', style: TextStyle(color: Colors.black)),
+                      Icon(Icons.person, color: Colors.white),
+                      Text('Perfil', style: TextStyle(color: Colors.white)),
                       ],
                     ),
                     label: const SizedBox.shrink(),
