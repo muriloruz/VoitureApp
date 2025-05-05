@@ -365,7 +365,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
                             user.cpf = _cpfCnpjController.text;
                             user.password = _passwordController.text;
                             if(_passwordController.text == _rPasswordController.text){
-                              if(user.nome == "" || user.cpf == "" || user.email == "" || user.password == ""){
+                              if(user.nome.trim().isEmpty || user.cpf.trim().isEmpty || user.email.trim().isEmpty || user.password.trim().isEmpty){
                                 showDialog(
                                 context: context,
                                 builder:  (context) => AlertDialog(

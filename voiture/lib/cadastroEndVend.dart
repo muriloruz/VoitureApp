@@ -83,6 +83,7 @@ class _CadastroEndVendState extends State<CadastroEndVend> {
   final TextEditingController _residenciaController = TextEditingController();
   
   
+  
   String _complementoOpcao = 'sem';
 
   @override
@@ -98,12 +99,15 @@ class _CadastroEndVendState extends State<CadastroEndVend> {
   }
  Widget _buildComplementoField() {
     if (_complementoOpcao == 'com') {
+      _complementoController.text = '';
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text('Complemento'),
           const SizedBox(height: 8.0),
+          
           TextFormField(
+            
             controller: _complementoController,
             decoration: const InputDecoration(
               hintText: 'Digite o complemento',
@@ -120,6 +124,7 @@ class _CadastroEndVendState extends State<CadastroEndVend> {
 
   @override
   Widget build(BuildContext context) {
+    _complementoController.text = 'sem';
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -185,30 +190,30 @@ class _CadastroEndVendState extends State<CadastroEndVend> {
                 const SizedBox(height: 8.0),
                 Row(
                 children: <Widget>[
-                  Radio<String>(
-                    value: 'sem',
-                    groupValue: _complementoOpcao,
-                    onChanged: (String? value) {
-                      setState(() {
-                        _complementoOpcao = value!;
-                      });
-                    },
-                  ),
-                  const Text('Sem complemento'),
-                  const SizedBox(width: 16.0),
-                  Radio<String>(
-                    value: 'com',
-                    groupValue: _complementoOpcao,
-                    onChanged: (String? value) {
-                      setState(() {
-                        _complementoOpcao = value!;
-                      });
-                    },
-                  ),
-                  const Text('Complemento'),
-                ],
-              ),
-              
+                    Radio<String>(
+                      value: 'sem',
+                      groupValue: _complementoOpcao,
+                      onChanged: (String? value) {
+                        setState(() {
+                          _complementoOpcao = value!;
+                        });
+                      },
+                    ),
+                    const Text('Sem complemento'),
+                    const SizedBox(width: 16.0),
+                    Radio<String>(
+                      value: 'com',
+                      groupValue: _complementoOpcao,
+                      onChanged: (String? value) {
+                        setState(() {
+                          _complementoOpcao = value!;
+                        });
+                      },
+                    ),
+                    const Text('Complemento'),
+                  ],
+                ),
+                _buildComplementoField(),
                 const SizedBox(height: 16.0),
                 const Text('Número da casa'),
                 const SizedBox(height: 8.0),
@@ -272,12 +277,13 @@ class _CadastroEndVendState extends State<CadastroEndVend> {
                       print(respFinal.statusCode);
                       print(respFinal.body);
                       if(respFinal.statusCode == 200){
-                         Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const Login())
-                         );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const Login())
+                       );
                       
                       }else if(respFinal.statusCode == 400){
+                          print(respFinal.body);
                           showDialog(
                             context: context,
                             builder:  (context) => AlertDialog(
@@ -293,6 +299,7 @@ class _CadastroEndVendState extends State<CadastroEndVend> {
                       );
                     }
                     }else if(resp.statusCode == 400){
+                      print(resp.body);
                       showDialog(
                               context: context,
                               builder:  (context) => AlertDialog(

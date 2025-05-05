@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:voiture/Controlador/ReqResp.dart';
 import 'package:voiture/Modelos/usuario.dart';
 import 'package:voiture/PerfilVend.dart';
+import 'package:voiture/anunciarPecas.dart';
 import 'package:voiture/login.dart';
 import 'package:voiture/perfilUser.dart';
 import 'package:http/http.dart' as http;
@@ -190,6 +191,12 @@ class MenuScreen extends StatelessWidget {
                             ],
                           ),
                         );
+                  }
+                  if(user.role == 'VENDEDOR'){
+                    Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const AnunciarPeca())
+                          );
                   }
                 },
                 child: Padding(
