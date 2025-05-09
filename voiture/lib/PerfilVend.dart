@@ -8,14 +8,19 @@ import 'package:voiture/PerfilVend.dart';
 import 'package:voiture/menuPrincipal.dart';
 import 'package:http/io_client.dart' as io;
 import 'package:voiture/perfilUser.dart';
+import 'package:voiture/Modelos/usedSettings.dart' as uS;
 
-/// Executa a requisição e retorna o JSON do usuário
+/*-Classe StateFul (para entender mais, veja a classe "buscarUnicaPeca"), muda quando acionada para buscar os dados do usuario;
+   -Classe destinada para o perfil do "vendedor"(usuario com a role "vendedor") */
+
+
+
+// Executa a requisição e retorna o JSON do usuário
 Future<String> fetchUsuario() async {
   final r = ReqResp(
     "https://192.168.18.61:7101",
     httpClient: createIgnoringCertificateClient(),
   );
-  //final payload = r.decodeJwtToken('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBhMDkxYmI4LTAzMmQtNGM3ZC1iYjhjLWU2OTJlMDk1MDUyZiIsInVzZXJuYW1lIjoic3NhQGdtYWlsLmNvbSIsIm5vbWUiOiJqb2FvIiwiZXhwIjoxNzQ2NzIwMDE4fQ.d_yrFWahmkF7czMaLMr8BIHhYlYo5afGnoUL036rzs4');
   final dcPayload = r.decodeJwtToken(user.token);
   final id = dcPayload.toString().split(":")[1].split(",")[0].trim();
   final resp = await r.getByName("Vendedor/", id);
@@ -40,10 +45,9 @@ class PerfilVend extends StatelessWidget {
       theme: ThemeData(
         colorScheme: const ColorScheme(
           primary: primaryColor, primaryContainer: Color(0xFF424242),
-          secondary: accentColor, secondaryContainer: Color(0xFF90CAF9),
-          background: backgroundColor, surface: Colors.white,
+          secondary: accentColor, secondaryContainer: Color(0xFF90CAF9), surface: Colors.white,
           error: Colors.red, onPrimary: Colors.white,
-          onSecondary: Colors.white, onBackground: primaryColor,
+          onSecondary: Colors.white,
           onSurface: primaryColor, onError: Colors.white,
           brightness: Brightness.light,
         ),
@@ -98,10 +102,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Perfil do Usuário'),
-        centerTitle: true,
-      ),
+      appBar: uS.UsedAppBar(nome:"perfil"),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _usuarioFuture,
         builder: (context, snapshot) {

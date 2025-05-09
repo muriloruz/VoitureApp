@@ -11,9 +11,11 @@ import 'package:voiture/menuPrincipal.dart';
 void main() {
   runApp(const Login());
 }
+/* Primeira tela complexa que aparece quando o usuario, ela usa a classe ReqResp para requisição na API */
+
+
 void getToken() async{
-  ReqResp r = new ReqResp("https://192.168.18.61:7101",httpClient: createIgnoringCertificateClient());
-  //final dcPaylod = r.decodeJwtToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBhMDkxYmI4LTAzMmQtNGM3ZC1iYjhjLWU2OTJlMDk1MDUyZiIsInVzZXJuYW1lIjoic3NhQGdtYWlsLmNvbSIsIm5vbWUiOiJqb2FvIiwiZXhwIjoxNzQ2NjUyNDYyfQ.wcUHWa3O_ScnPHGgtaPY_4ZcaezLV3ZdLxWPLxw2OWA");
+  ReqResp r = ReqResp("https://192.168.18.61:7101",httpClient: createIgnoringCertificateClient());
   final dcPaylod = r.decodeJwtToken(user.token);
   String resp = dcPaylod.toString();
   var priQuebra = resp.split(":");
@@ -184,25 +186,15 @@ Widget build(BuildContext context) {
                 ),
                 const SizedBox(height: 32.0),
                 ElevatedButton(
-                  onPressed: () async{
-                    
-                    /*final resposta = await dio.get("https://192.168.86.220:7101/usuario/all");
-                    print(resposta);*/
-                    
+                  onPressed: () async{    
                  try{
-
-                  
-                    ReqResp r = new ReqResp("https://192.168.18.61:7101",httpClient: createIgnoringCertificateClient());
-                    
-                    
+                    ReqResp r = ReqResp("https://192.168.18.61:7101",httpClient: createIgnoringCertificateClient());
                     final String email = _emailController.text;
                     final String password = _passwordController.text;
-
                     final Map<String, dynamic> loginData = {
                      'email': email,
                      'password': password,
                     };
-
                     final http.Response response = await r.post('usuario/login',loginData);
                     if(response.statusCode == 200){
                         Usuario user = Usuario.instance;

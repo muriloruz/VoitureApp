@@ -7,7 +7,12 @@ import 'package:http/http.dart' as http;
 void main() {
   runApp(const Cadastro());
 }
-
+/*
+  - Tela para cadastro de usuário;
+  - Ela é do tipo "StateFul" (Para saber mais veja a classe "BuscarUnicaPeca");
+  - Ela pode mudar o estado para receber ou o cpf ou cnpj do usuario (CPF = Cliente, CNPJ = Vendedor);
+  - Vale destacar que esse modelo que esta sendo usado para fazer a requisição, é diferente do cadastro de peça.
+ */
 class Cadastro extends StatelessWidget {
   const Cadastro({super.key});
 
@@ -16,10 +21,10 @@ class Cadastro extends StatelessWidget {
     return MaterialApp(
       title: 'Tela de Cadastro',
       theme: ThemeData(
-        brightness: Brightness.light, // Fundo branco
+        brightness: Brightness.light, 
         primarySwatch: Colors.grey,
         textTheme: const TextTheme(
-          bodyMedium: TextStyle(color: Colors.black), // Cor padrão do texto
+          bodyMedium: TextStyle(color: Colors.black), 
           labelMedium: TextStyle(color: Colors.black),
           titleMedium: TextStyle(color: Colors.black),
           bodySmall: TextStyle(color: Colors.black),
@@ -35,10 +40,10 @@ class Cadastro extends StatelessWidget {
         inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
-            borderSide: const BorderSide(color: Colors.black), // Borda preta
+            borderSide: const BorderSide(color: Colors.black), 
           ),
           filled: true,
-          fillColor: Colors.white, // Fundo branco dos inputs
+          fillColor: Colors.white, 
           hintStyle: TextStyle(color: Colors.grey.shade600),
           labelStyle: const TextStyle(color: Colors.black),
         ),
@@ -101,7 +106,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
           hintText: 'Digite seu CPF',
           
         ),
-        style: const TextStyle(color: Colors.black), // Cor do texto digitado
+        style: const TextStyle(color: Colors.black), 
       );
     } else {
       return TextFormField(
@@ -112,7 +117,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
           labelText: 'CNPJ',
           hintText: 'Digite seu CNPJ',
         ),
-        style: const TextStyle(color: Colors.black), // Cor do texto digitado
+        style: const TextStyle(color: Colors.black), 
       );
     }
   }
@@ -120,7 +125,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Fundo branco da tela
+      backgroundColor: Colors.white, 
       appBar: AppBar(
         title: const Text('Cadastre-se'),
         backgroundColor: Colors.black,
@@ -135,8 +140,8 @@ class _CadastroScreenState extends State<CadastroScreen> {
           },
         ),
       ),
-      body: SingleChildScrollView( // Envolve tudo para permitir a rolagem
-        child: Column( // Coluna principal com a imagem e o formulário
+      body: SingleChildScrollView( // ScrollView Serve para adicionar o efeito de rolagem na tela do celular
+        child: Column( 
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Padding(
@@ -166,7 +171,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
                       decoration: const InputDecoration(
                         hintText: 'Seu Nome',
                       ),
-                      style: const TextStyle(color: Colors.black), // Cor do texto digitado
+                      style: const TextStyle(color: Colors.black), 
                     ),
                     const SizedBox(height: 16.0),
                     const Text(
@@ -179,7 +184,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
                       decoration: const InputDecoration(
                         hintText: 'seu@email.aqui',
                       ),
-                      style: const TextStyle(color: Colors.black), // Cor do texto digitado
+                      style: const TextStyle(color: Colors.black), 
                     ),
                     const SizedBox(height: 16.0),
                     const Text(
@@ -204,7 +209,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
                         ),
                         labelStyle: const TextStyle(color: Colors.black),
                       ),
-                      style: const TextStyle(color: Colors.black), // Cor do texto digitado
+                      style: const TextStyle(color: Colors.black), 
                     ),
                     const SizedBox(height: 16.0),
                     const Text(
@@ -229,7 +234,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
                         ),
                         labelStyle: const TextStyle(color: Colors.black),
                       ),
-                      style: const TextStyle(color: Colors.black), // Cor do texto digitado
+                      style: const TextStyle(color: Colors.black), 
                     ),
                     const SizedBox(height: 16.0),
                     const Text(
@@ -380,7 +385,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
                                 ),
                               );
                               }else{
-                                ReqResp r = new ReqResp("https://192.168.18.61:7101",httpClient: createIgnoringCertificateClient());
+                                ReqResp r = ReqResp("https://192.168.18.61:7101",httpClient: createIgnoringCertificateClient());
                                 http.Response resp = await r.getByName("vendedor/verEmail/",user.email);
                                 if(resp.statusCode == 200){
                                   showDialog(

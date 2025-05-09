@@ -7,11 +7,14 @@ import 'package:http/http.dart' as http;
 import 'package:voiture/cadastro.dart';
 import 'package:voiture/login.dart';
 
-
+/* - Essa classe é chamada primeiro no cadastro do vendededor, depois no do usuario quando o mesmo for comprar a peça */
 void main() {
-  runApp( MyApp()); // MaterialApp na raiz
+  runApp( MyApp()); 
 }
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Cadastro de Endereço',
@@ -63,7 +66,7 @@ class MyApp extends StatelessWidget {
   }
 }
 class CadastroEndVend extends StatefulWidget {
-  const CadastroEndVend({Key? key}) : super(key: key);
+  const CadastroEndVend({super.key});
 
   @override
   State<CadastroEndVend> createState() => _CadastroEndVendState();

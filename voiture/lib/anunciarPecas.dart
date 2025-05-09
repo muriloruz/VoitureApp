@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:http/http.dart' as http;
-
+import 'package:voiture/Modelos/usedSettings.dart' as uS;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:voiture/Controlador/ReqResp.dart';
@@ -9,12 +9,12 @@ import 'package:voiture/PerfilVend.dart';
 import 'package:voiture/menuPrincipal.dart';
 import 'package:voiture/perfilUser.dart';
 import 'package:path/path.dart' as p;
-
-
+/*
+  - Tela para criar anuncio de peça;
+  - Essa classe usa outro tipod e logica para fazer as requisições;
+  - Ela precisa ser diferente pois ela manda uma imagem, que é a imagem da peça.
+ */
 Usuario user = Usuario.instance;
-
-
-
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -24,96 +24,95 @@ class MyHttpOverrides extends HttpOverrides {
           (X509Certificate cert, String host, int port) => true;
   }
 }
+
 class AnunciarPeca extends StatefulWidget {
-  
   const AnunciarPeca({super.key});
 
   @override
   State<AnunciarPeca> createState() => _AnunciarPecaScreenState();
 }
-
+//Essas variaveis com nome "controller" servem para salvar os dados dos inputs fields
 class _AnunciarPecaScreenState extends State<AnunciarPeca> {
   final TextEditingController _nomePecaController = TextEditingController();
   final TextEditingController _modeloController = TextEditingController();
-  final TextEditingController _anoController = TextEditingController();
   final TextEditingController _quantidadeController = TextEditingController();
   final TextEditingController _valorController = TextEditingController();
   final TextEditingController _garantiaController = TextEditingController();
   final TextEditingController _descricaoController = TextEditingController();
   File? _imagemSelecionada; // Variável para armazenar a imagem selecionada
   final ImagePicker _picker = ImagePicker();
-  bool _mostrarOpcoesImagem = false;
+  final bool _mostrarOpcoesImagem = false;
   bool pecaCriada = false;
-
 
   int _selectedIndex = 0;
 
-  
-Future<void> enviarPecaComImagem({
-  required BuildContext context,
-  required String nome,
-  required String descricao,
-  required String modelo,
-  required String qntd,
-  required String valor,
-  required String garantia,
-  required File imagemFile,
-  required String vendId
-}) async {
-  final uri = Uri.parse("https://192.168.18.61:7101/peca");
+  Future<void> enviarPecaComImagem({
+    required BuildContext context,
+    required String nome,
+    required String descricao,
+    required String modelo,
+    required String qntd,
+    required String valor,
+    required String garantia,
+    required File imagemFile,
+    required String vendId,
+  }) async {
+    final uri = Uri.parse("https://192.168.18.61:7101/peca");
 
-  final request = http.MultipartRequest('POST', uri);
+    final request = http.MultipartRequest('POST', uri);
 
-  // Campos de texto
-  request.fields['nomePeca'] = nome;
-  request.fields['descricao'] = descricao;
-  request.fields['garantia'] = garantia;
-  request.fields['fabricante'] = modelo;
-  request.fields['qntd'] = qntd;
-  request.fields['valor'] = valor;
-  request.fields['VendedorId'] = vendId;
-  // Arquivo da imagem
-  final imagemStream = http.ByteStream(imagemFile.openRead());
-  final imagemLength = await imagemFile.length();
+    // Campos de texto
+    request.fields['nomePeca'] = nome;
+    request.fields['descricao'] = descricao;
+    request.fields['garantia'] = garantia;
+    request.fields['fabricante'] = modelo;
+    request.fields['qntd'] = qntd;
+    request.fields['valor'] = valor;
+    request.fields['VendedorId'] = vendId;
+    // Arquivo da imagem
+    final imagemStream = http.ByteStream(imagemFile.openRead());
+    final imagemLength = await imagemFile.length();
 
-  final multipartFile = http.MultipartFile(
-    'imagem', // nome do campo esperado no backend
-    imagemStream,
-    imagemLength,
-    filename: p.basename(imagemFile.path.isNotEmpty ? imagemFile.path : 'default.jpg'),
-  );
+    final multipartFile = http.MultipartFile(
+      'imagem', // nome do campo esperado no backend
+      imagemStream,
+      imagemLength,
+      filename: p.basename(
+        imagemFile.path.isNotEmpty ? imagemFile.path : 'default.jpg',
+      ),
+    );
 
-  request.files.add(multipartFile);
+    request.files.add(multipartFile);
 
-  final client = createIgnoringCertificateClient();
+    final client = createIgnoringCertificateClient();
 
-  try {
-    final streamedResponse = await client.send(request);
-    final response = await http.Response.fromStream(streamedResponse);
+    try {
+      final streamedResponse = await client.send(request);
+      final response = await http.Response.fromStream(streamedResponse);
 
-    if (response.statusCode == 201) {
-      pecaCriada = true;
-    } else {
-      print('Erro ao criar peça. Código: ${response.statusCode}');
-      print('Corpo da resposta: ${response.body}');
+      if (response.statusCode == 201) {
+        pecaCriada = true;
+      } else {
+        print('Erro ao criar peça. Código: ${response.statusCode}');
+        print('Corpo da resposta: ${response.body}');
+      }
+    } catch (e) {
+      print('Erro na requisição: $e');
+    } finally {
+      client.close(); 
     }
-  } catch (e) {
-    print('Erro na requisição: $e');
-  } finally {
-    client.close(); // importante!
   }
-}
-
 
   Future<void> _escolherImagemGaleria() async {
-    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.gallery,
+    );
 
     if (pickedFile != null) {
       setState(() {
         _imagemSelecionada = File(pickedFile.path);
       });
       print('Imagem selecionada da galeria: ${_imagemSelecionada?.path}');
-      // Aqui você pode fazer algo com a imagem selecionada, como exibir ou fazer upload.
     } else {
       print('Nenhuma imagem selecionada.');
     }
@@ -121,7 +120,9 @@ Future<void> enviarPecaComImagem({
 
   // Função para tirar uma foto com a câmera
   Future<void> _tirarFotoCamera() async {
-    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.camera);
+    final XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.camera,
+    );
 
     if (pickedFile != null) {
       setState(() {
@@ -134,11 +135,10 @@ Future<void> enviarPecaComImagem({
     }
   }
 
-
   void _onItemTapped(int index) {
     setState(() {
-        _selectedIndex = index;
-        switch (index) {
+      _selectedIndex = index;
+      switch (index) {
         case 0: // Início
           _navigateToHome();
           break;
@@ -151,83 +151,80 @@ Future<void> enviarPecaComImagem({
         case 3: // Perfil
           _navigateToPerfil();
           break;
-     }
+      }
     });
-    
-    
   }
+
   void _mostrarEscolhaImagem() {
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: const Text('Selecionar Imagem'),
-      content: const Text('Escolha de onde deseja pegar a imagem.'),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop(); // Fecha o alerta
-            _escolherImagemGaleria();
-          },
-          child: const Text('Galeria'),
-        ),
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop(); // Fecha o alerta
-            _tirarFotoCamera();
-          },
-          child: const Text('Câmera'),
-        ),
-      ],
-    ),
-  );
-}
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Selecionar Imagem'),
+            content: const Text('Escolha de onde deseja pegar a imagem.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Fecha o alerta
+                  _escolherImagemGaleria();
+                },
+                child: const Text('Galeria'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Fecha o alerta
+                  _tirarFotoCamera();
+                },
+                child: const Text('Câmera'),
+              ),
+            ],
+          ),
+    );
+  }
+
   void _navigateToHome() {
-  print('Navegar para a tela Início');
-  // Aqui você pode navegar para a tela "Início"
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => MenuPrincipal()), // Exemplo de navegação
-  );
-}
+    print('Navegar para a tela Início');
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MenuPrincipal(),
+      ), // Exemplo de navegação
+    );
+  }
 
-
-void _navigateToPedidos() {
-  print('Navegar para a tela Pedidos');
-  // Navegar para a tela "Pedidos"
-  /*Navigator.push(
+  void _navigateToPedidos() {
+    print('Navegar para a tela Pedidos');
+    // Navegar para a tela "Pedidos"
+    /*Navigator.push(
     context,
     MaterialPageRoute(builder: (context) => PedidosScreen()),
   );*/
-}
+  }
 
-
-void _navigateToCarrinho() {
-  print('Navegar para a tela Favoritos');
-  // Navegar para a tela "Favoritos"
-  /*Navigator.push(
+  void _navigateToCarrinho() {
+    print('Navegar para a tela Favoritos');
+    // Navegar para a tela "Favoritos"
+    /*Navigator.push(
     context,
     MaterialPageRoute(builder: (context) => FavoritosScreen()),
   );*/
-}
+  }
 
-
-
-void _navigateToPerfil() {
-  print('Navegar para a tela Perfil');
-  if(user.role == 'USUARIO'){
-    Navigator.push(
-      context, 
-      MaterialPageRoute(builder: (context) => const PerfilUser())
-    );
-    }
-    else{
+  void _navigateToPerfil() {
+    print('Navegar para a tela Perfil');
+    if (user.role == 'USUARIO') {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const PerfilVend())
-        );
+        MaterialPageRoute(builder: (context) => const PerfilUser()),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const PerfilVend()),
+      );
     }
-      print('Perfil pressionado');
-}
+    print('Perfil pressionado');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -270,8 +267,9 @@ void _navigateToPerfil() {
                     const SizedBox(height: 14.0),
                     Row(
                       children: [
-                        Expanded(child: _buildTextField(_modeloController, 'Modelo')),
-                        
+                        Expanded(
+                          child: _buildTextField(_modeloController, 'Modelo'),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 16.0),
@@ -284,7 +282,9 @@ void _navigateToPerfil() {
                     _buildTextField(
                       _valorController,
                       'Valor da peça (R\$)',
-                      keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
                     ),
                     const SizedBox(height: 16.0),
                     _buildTextField(_garantiaController, 'Garantia (opcional)'),
@@ -309,45 +309,59 @@ void _navigateToPerfil() {
                     ],
                     const SizedBox(height: 24.0),
                     _buildOutlinedButton('Insira uma imagem', () {
-                        setState(() {
-                          _mostrarEscolhaImagem();
-                       });
+                      setState(() {
+                        _mostrarEscolhaImagem();
+                      });
                     }),
                     const SizedBox(height: 16.0),
-                    
+
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () async {
+                          
                           print(user.id);
+                          
                           if (_imagemSelecionada != null) {
-                          await enviarPecaComImagem(
-                          context: context, // Passe o context aqui
-                          nome: _nomePecaController.text,
-                          descricao: _descricaoController.text,
-                          imagemFile: _imagemSelecionada!,
-                          garantia: _garantiaController.text,
-                          qntd: _quantidadeController.text,
-                          modelo: _modeloController.text,
-                          valor: _valorController.text,
-                          vendId: user.id,
-                        );
-                        if(pecaCriada){
-                          ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Anuncio da peça cirado com sucesso!',style: TextStyle(color: Colors.white)),backgroundColor: Colors.blue, ),
-                        );
-                        await Future.delayed(const Duration(seconds: 2));
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const MenuPrincipal())
-                          );
-                        }
-                      } else {
-                        // Lidar com o caso em que nenhuma imagem foi selecionada
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Por favor, selecione uma imagem.')),
-                        );
-                      }
+                            await enviarPecaComImagem(
+                              context: context, 
+                              nome: _nomePecaController.text,
+                              descricao: _descricaoController.text,
+                              imagemFile: _imagemSelecionada!,
+                              garantia: _garantiaController.text,
+                              qntd: _quantidadeController.text,
+                              modelo: _modeloController.text,
+                              valor: _valorController.text,
+                              vendId: user.id,
+                            );
+                            if (pecaCriada) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Anuncio da peça cirado com sucesso!',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  backgroundColor: Colors.blue,
+                                ),
+                              );
+                              await Future.delayed(const Duration(seconds: 2));
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const MenuPrincipal(),
+                                ),
+                              );
+                            }
+                          } else {
+                            // Lidar com o caso em que nenhuma imagem foi selecionada
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Por favor, selecione uma imagem.',
+                                ),
+                              ),
+                            );
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.black,
@@ -357,7 +371,10 @@ void _navigateToPerfil() {
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                         ),
-                        child: const Text('Anunciar', style: TextStyle(fontSize: 16.0)),
+                        child: const Text(
+                          'Anunciar',
+                          style: TextStyle(fontSize: 16.0),
+                        ),
                       ),
                     ),
                   ],
@@ -367,12 +384,19 @@ void _navigateToPerfil() {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
+      bottomNavigationBar: uS.UsedBottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+      ),
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label,
-      {TextInputType keyboardType = TextInputType.text, int maxLines = 1}) {
+  Widget _buildTextField(
+    TextEditingController controller,
+    String label, {
+    TextInputType keyboardType = TextInputType.text,
+    int maxLines = 1,
+  }) {
     return TextField(
       controller: controller,
       keyboardType: keyboardType,
@@ -394,7 +418,6 @@ void _navigateToPerfil() {
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          
           padding: const EdgeInsets.symmetric(vertical: 15.0),
           child: Center(
             child: Text(text, style: const TextStyle(color: Colors.black)),
@@ -403,37 +426,4 @@ void _navigateToPerfil() {
       ),
     );
   }
-
-  Widget _buildBottomNavigationBar() {
-    return BottomNavigationBar(
-      currentIndex: _selectedIndex,
-      selectedItemColor: Colors.white,
-      unselectedItemColor: Colors.white70,
-      backgroundColor: Colors.black,
-      elevation: 8,
-      onTap: _onItemTapped,
-      type: BottomNavigationBarType.fixed, 
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Início',
-          
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.list_alt_outlined),
-          label: 'Pedidos',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.shopping_cart_outlined),
-          label: 'Carrinho',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Perfil',
-        ),
-      ],
-    );
-  }
-
 }
-

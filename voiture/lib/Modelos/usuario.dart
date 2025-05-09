@@ -1,4 +1,9 @@
 class Usuario {
+  /*
+   -Classe modelo para salvar alguns dados do ususarios, como o token e o id;
+  - Essa classe é importante principalmente no caso do vendedor, pois só é enviado para API na segunda tela;
+  - Classe SingleTom para ter uma unica insância.
+  */ 
   static Usuario? _instance;
 
   String _token;
@@ -8,7 +13,7 @@ class Usuario {
   String _password;
   String _numeroResid;
   String _role;
-  String _dados;
+  final String _dados;
   String _id;
 
   Usuario._(this._cpf, this._nome, this._email, this._password, this._numeroResid, this._id, this._token,this._role,this._dados);

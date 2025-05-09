@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart' as io;
-import 'package:voiture/Modelos/usuario.dart';
-
+/// Classe de controle para fazer as requisições;
+/// - A função fora da classe serve paraa fazzer requisições não seguras.
 class ReqResp {
   final String baseUrl;
   final http.Client httpClient; 
@@ -42,7 +42,10 @@ class ReqResp {
     
     return await get('$endpoint$id', headers: headers);
   }
-
+  Future<http.Response> getById(String endpoint, int id, {Map<String, String>? headers}) async {
+    
+    return await get('$endpoint$id', headers: headers);
+  }
   Future<http.Response> postByName(String name, dynamic body, {Map<String, String>? headers}) async {
     final requestBody = {...body, 'name': name};
     return await post('users', requestBody, headers: headers);
@@ -88,8 +91,8 @@ class ReqResp {
 
 
 http.Client createIgnoringCertificateClient() {
-  final _httpClient = HttpClient()
+  final httpClient = HttpClient()
     ..badCertificateCallback =
         (X509Certificate cert, String host, int port) => true;
-  return io.IOClient(_httpClient);
+  return io.IOClient(httpClient);
 }
