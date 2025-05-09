@@ -10,7 +10,7 @@ import 'package:voiture/perfilUser.dart';
 import 'package:http/http.dart' as http;
 
 class PerfilPeca extends StatefulWidget {
-  final int idPeca; // Exemplo de como você pode passar o ID da peça
+  final int idPeca; 
   const PerfilPeca({Key? key, required this.idPeca}) : super(key: key);
 
   @override
@@ -18,7 +18,7 @@ class PerfilPeca extends StatefulWidget {
 }
 
 class _PerfilPecaState extends State<PerfilPeca> {
-  // Dados que serão buscados da API
+ 
   String _nomePeca = 'Radiador Denso BC116420-45802C';
   double _preco = 399.00;
   String _descricao =
@@ -29,12 +29,12 @@ class _PerfilPecaState extends State<PerfilPeca> {
   String _emailVendedor = 'jacinto.pinto@email.com'; // Exemplo de email
   String _telefoneVendedor = '(11) 98765-4321'; // Exemplo de telefone
   String _imagemUrl =
-      'https://192.168.18.61:7101/imagens/1000100451.jpg'; // URL da imagem (substitua pela sua)
+      'https://192.168.18.61:7101/imagens/1000100451.jpg'; 
 
   @override
   void initState() {
     super.initState();
-    _carregarDadosPeca(); // Chamando a função para buscar os dados da API
+    _carregarDadosPeca(); 
   }
 
   int _selectedIndex = 0;
@@ -77,7 +77,7 @@ class _PerfilPecaState extends State<PerfilPeca> {
   }
 
   Future<void> _carregarDadosPeca() async {
-    // Simulação de chamada à API (substitua pela sua lógica real)
+   
     await Future.delayed(const Duration(seconds: 2));
     ReqResp r = new ReqResp(
       "https://192.168.18.61:7101",
@@ -86,7 +86,7 @@ class _PerfilPecaState extends State<PerfilPeca> {
     try {
       http.Response resp = await r.getById("peca/", widget.idPeca);
       if (resp.statusCode == 200) {
-        // Processar a resposta da API e atualizar o estado
+        
         Map<String, dynamic> data = jsonDecode(resp.body);
         setState(() {
           _nomePeca = data['nomePeca'];
@@ -100,7 +100,7 @@ class _PerfilPecaState extends State<PerfilPeca> {
           _imagemUrl = data['imagem'];
         });
       } else {
-        // Lidar com erros na chamada da API
+        
         print('Erro ao carregar dados da peça: ${resp.statusCode}');
       }
     } catch (e) {
@@ -111,7 +111,7 @@ class _PerfilPecaState extends State<PerfilPeca> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: uS.UsedAppBar(nome: "perfil"), // Usando a AppBar personalizada
+      appBar: uS.UsedAppBar(nome: "perfil"),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -290,7 +290,7 @@ class _PerfilPecaState extends State<PerfilPeca> {
                       padding: const EdgeInsets.symmetric(vertical: 12.0),
                     ),
                     onPressed: () {
-                      // Lógica para comprar agora
+                      
                       Navigator.push(context, MaterialPageRoute(builder: (context) => Pagamento(idPeca: widget.idPeca, numeroPecas: 1)));
                     },
                     child: const Text(
@@ -308,7 +308,7 @@ class _PerfilPecaState extends State<PerfilPeca> {
                       padding: const EdgeInsets.symmetric(vertical: 12.0),
                     ),
                     onPressed: () {
-                      // Lógica para adicionar ao carrinho
+                      
                       print('Adicionar ao carrinho pressionado');
                     },
                     child: const Text(
@@ -325,7 +325,7 @@ class _PerfilPecaState extends State<PerfilPeca> {
       bottomNavigationBar: uS.UsedBottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-      ), // Usando a BottomNavigationBar personalizada
+      ), 
     );
   }
 }
