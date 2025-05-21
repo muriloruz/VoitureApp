@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:voiture/Controlador/ReqResp.dart';
 import 'package:voiture/Modelos/usuario.dart';
-import 'package:voiture/PerfilVend.dart';
 import 'package:voiture/menuPrincipal.dart';
-import 'package:voiture/perfilUser.dart';
 import 'package:path/path.dart' as p;
 /*
   - Tela para criar anuncio de peça;
@@ -31,7 +29,7 @@ class AnunciarPeca extends StatefulWidget {
   @override
   State<AnunciarPeca> createState() => _AnunciarPecaScreenState();
 }
-//Essas variaveis com nome "controller" servem para salvar os dados dos inputs fields
+
 class _AnunciarPecaScreenState extends State<AnunciarPeca> {
   final TextEditingController _nomePecaController = TextEditingController();
   final TextEditingController _modeloController = TextEditingController();
@@ -39,12 +37,11 @@ class _AnunciarPecaScreenState extends State<AnunciarPeca> {
   final TextEditingController _valorController = TextEditingController();
   final TextEditingController _garantiaController = TextEditingController();
   final TextEditingController _descricaoController = TextEditingController();
-  File? _imagemSelecionada; // Variável para armazenar a imagem selecionada
+  File? _imagemSelecionada; 
   final ImagePicker _picker = ImagePicker();
-  final bool _mostrarOpcoesImagem = false;
+
   bool pecaCriada = false;
 
-  int _selectedIndex = 0;
 
   Future<void> enviarPecaComImagem({
     required BuildContext context,
@@ -61,20 +58,22 @@ class _AnunciarPecaScreenState extends State<AnunciarPeca> {
 
     final request = http.MultipartRequest('POST', uri);
 
-    // Campos de texto
+  
     request.fields['nomePeca'] = nome;
     request.fields['descricao'] = descricao;
     request.fields['garantia'] = garantia;
     request.fields['fabricante'] = modelo;
     request.fields['qntd'] = qntd;
-    request.fields['valor'] = valor;
+    final valor1 = valor.replaceAll(".", "");
+    print(valor1);
+    request.fields['preco'] = valor1;
     request.fields['VendedorId'] = vendId;
-    // Arquivo da imagem
+    
     final imagemStream = http.ByteStream(imagemFile.openRead());
     final imagemLength = await imagemFile.length();
 
     final multipartFile = http.MultipartFile(
-      'imagem', // nome do campo esperado no backend
+      'imagem', 
       imagemStream,
       imagemLength,
       filename: p.basename(
@@ -118,7 +117,7 @@ class _AnunciarPecaScreenState extends State<AnunciarPeca> {
     }
   }
 
-  // Função para tirar uma foto com a câmera
+  
   Future<void> _tirarFotoCamera() async {
     final XFile? pickedFile = await _picker.pickImage(
       source: ImageSource.camera,
@@ -129,31 +128,13 @@ class _AnunciarPecaScreenState extends State<AnunciarPeca> {
         _imagemSelecionada = File(pickedFile.path);
       });
       print('Foto tirada da câmera: ${_imagemSelecionada?.path}');
-      // Aqui você pode fazer algo com a foto tirada.
+      
     } else {
       print('Nenhuma foto tirada.');
     }
   }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      switch (index) {
-        case 0: // Início
-          _navigateToHome();
-          break;
-        case 1: // Pedidos
-          _navigateToPedidos();
-          break;
-        case 2: // Favoritos
-          _navigateToCarrinho();
-          break;
-        case 3: // Perfil
-          _navigateToPerfil();
-          break;
-      }
-    });
-  }
+  
 
   void _mostrarEscolhaImagem() {
     showDialog(
@@ -165,14 +146,14 @@ class _AnunciarPecaScreenState extends State<AnunciarPeca> {
             actions: [
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop(); // Fecha o alerta
+                  Navigator.of(context).pop(); 
                   _escolherImagemGaleria();
                 },
                 child: const Text('Galeria'),
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop(); // Fecha o alerta
+                  Navigator.of(context).pop(); 
                   _tirarFotoCamera();
                 },
                 child: const Text('Câmera'),
@@ -181,51 +162,6 @@ class _AnunciarPecaScreenState extends State<AnunciarPeca> {
           ),
     );
   }
-
-  void _navigateToHome() {
-    print('Navegar para a tela Início');
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => MenuPrincipal(),
-      ), // Exemplo de navegação
-    );
-  }
-
-  void _navigateToPedidos() {
-    print('Navegar para a tela Pedidos');
-    // Navegar para a tela "Pedidos"
-    /*Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => PedidosScreen()),
-  );*/
-  }
-
-  void _navigateToCarrinho() {
-    print('Navegar para a tela Favoritos');
-    // Navegar para a tela "Favoritos"
-    /*Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => FavoritosScreen()),
-  );*/
-  }
-
-  void _navigateToPerfil() {
-    print('Navegar para a tela Perfil');
-    if (user.role == 'USUARIO') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const PerfilUser()),
-      );
-    } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const PerfilVend()),
-      );
-    }
-    print('Perfil pressionado');
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -276,7 +212,8 @@ class _AnunciarPecaScreenState extends State<AnunciarPeca> {
                     _buildTextField(
                       _quantidadeController,
                       'Quantidade a ser anunciada',
-                      keyboardType: TextInputType.number,
+                      maxLength: 9,
+                      keyboardType: TextInputType.numberWithOptions(signed: false,decimal: true),
                     ),
                     const SizedBox(height: 16.0),
                     _buildTextField(
@@ -353,7 +290,6 @@ class _AnunciarPecaScreenState extends State<AnunciarPeca> {
                               );
                             }
                           } else {
-                            // Lidar com o caso em que nenhuma imagem foi selecionada
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text(
@@ -384,10 +320,7 @@ class _AnunciarPecaScreenState extends State<AnunciarPeca> {
           ],
         ),
       ),
-      bottomNavigationBar: uS.UsedBottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-      ),
+      bottomNavigationBar: uS.UsedBottomNavigationBar(),
     );
   }
 
@@ -396,6 +329,7 @@ class _AnunciarPecaScreenState extends State<AnunciarPeca> {
     String label, {
     TextInputType keyboardType = TextInputType.text,
     int maxLines = 1,
+    int? maxLength
   }) {
     return TextField(
       controller: controller,

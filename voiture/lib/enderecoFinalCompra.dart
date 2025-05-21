@@ -1,13 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:voiture/Controlador/ReqResp.dart';
 import 'package:voiture/Modelos/usuario.dart';
 import 'package:http/http.dart' as http;
-import 'package:voiture/cadastro.dart';
-import 'package:voiture/login.dart';
+import 'package:voiture/menuPrincipal.dart';
 
-/* - Essa classe é chamada primeiro no cadastro do vendededor, depois no do usuario quando o mesmo for comprar a peça */
+/* - Essa classe é chamada primeiro no cadastro do vendedor, depois no do usuário quando o mesmo for comprar a peça */
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -60,19 +61,19 @@ class MyApp extends StatelessWidget {
           foregroundColor: Colors.black,
         ),
       ),
-      home: const CadastroEndVend(),
+      home: const EnderecoFinalCompra(),
     );
   }
 }
 
-class CadastroEndVend extends StatefulWidget {
-  const CadastroEndVend({super.key});
+class EnderecoFinalCompra extends StatefulWidget {
+  const EnderecoFinalCompra({super.key});
 
   @override
-  State<CadastroEndVend> createState() => _CadastroEndVendState();
+  State<EnderecoFinalCompra> createState() => _EnderecoFinalCompraState();
 }
 
-class _CadastroEndVendState extends State<CadastroEndVend> {
+class _EnderecoFinalCompraState extends State<EnderecoFinalCompra> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _cepController = TextEditingController();
@@ -82,10 +83,14 @@ class _CadastroEndVendState extends State<CadastroEndVend> {
   final TextEditingController _complementoController = TextEditingController();
   final TextEditingController _unidadeController = TextEditingController();
   final TextEditingController _ufController = TextEditingController();
-  final TextEditingController _telefoneController = TextEditingController();
   final TextEditingController _residenciaController = TextEditingController();
 
-  String _complementoOpcao = 'sem';
+  
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -96,34 +101,14 @@ class _CadastroEndVendState extends State<CadastroEndVend> {
     _complementoController.dispose();
     _unidadeController.dispose();
     _ufController.dispose();
+    _residenciaController.dispose();
     super.dispose();
   }
 
-  Widget _buildComplementoField() {
-    if (_complementoOpcao == 'com') {
-      _complementoController.text = '';
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Complemento'),
-          const SizedBox(height: 8.0),
-
-          TextFormField(
-            controller: _complementoController,
-            decoration: const InputDecoration(hintText: 'Digite o complemento'),
-            style: const TextStyle(color: Colors.black),
-          ),
-          const SizedBox(height: 16.0),
-        ],
-      );
-    } else {
-      return const SizedBox.shrink();
-    }
-  }
+  
 
   @override
   Widget build(BuildContext context) {
-    _complementoController.text = 'sem';
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -135,7 +120,7 @@ class _CadastroEndVendState extends State<CadastroEndVend> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const Cadastro()),
+              MaterialPageRoute(builder: (context) => const MenuPrincipal()),
             );
           },
         ),
@@ -145,7 +130,7 @@ class _CadastroEndVendState extends State<CadastroEndVend> {
         child: Form(
           key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.stretch, // Estica os campos
             children: <Widget>[
               const Text('CEP'),
               const SizedBox(height: 8.0),
@@ -177,35 +162,7 @@ class _CadastroEndVendState extends State<CadastroEndVend> {
                 decoration: const InputDecoration(hintText: 'Digite a cidade'),
               ),
               const SizedBox(height: 16.0),
-              const Text('Complemento'),
-              const SizedBox(height: 8.0),
-              Row(
-                children: <Widget>[
-                  Radio<String>(
-                    value: 'sem',
-                    groupValue: _complementoOpcao,
-                    onChanged: (String? value) {
-                      setState(() {
-                        _complementoOpcao = value!;
-                      });
-                    },
-                  ),
-                  const Text('Sem complemento'),
-                  const SizedBox(width: 16.0),
-                  Radio<String>(
-                    value: 'com',
-                    groupValue: _complementoOpcao,
-                    onChanged: (String? value) {
-                      setState(() {
-                        _complementoOpcao = value!;
-                      });
-                    },
-                  ),
-                  const Text('Complemento'),
-                ],
-              ),
-              _buildComplementoField(),
-              const SizedBox(height: 16.0),
+            
               const Text('Número da casa'),
               const SizedBox(height: 8.0),
               TextFormField(
@@ -221,17 +178,6 @@ class _CadastroEndVendState extends State<CadastroEndVend> {
                 maxLength: 2,
                 decoration: const InputDecoration(hintText: 'Digite a UF'),
               ),
-              const SizedBox(height: 16.0),
-              const Text('Celular'),
-              const SizedBox(height: 8.0),
-              TextFormField(
-                controller: _telefoneController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  hintText: 'Digite o seu número',
-                ),
-              ),
-
               const SizedBox(height: 32.0),
               ElevatedButton(
                 onPressed: () async {
@@ -248,76 +194,52 @@ class _CadastroEndVendState extends State<CadastroEndVend> {
                     "Cidade": _cidadeController.text,
                   };
                   http.Response resp = await r.post("Endereco", body);
+
                   if (resp.statusCode == 200) {
-                    int enderecoId = int.parse(resp.body);
-                    Map<String, dynamic> bodyVend = {
-                      "cnpj": user.cpf,
-                      "Email": user.email,
-                      "Password": user.password,
-                      "UserName": user.email,
-                      "RePassword": user.password,
-                      "telefoneVend": _telefoneController.text,
-                      "Nome": user.nome,
-                      "Complemento": _complementoController.text,
-                      "numCasa": _residenciaController.text,
-                      "EnderecoId": enderecoId,
+                    Map<String, dynamic> bodyPatchEnd = {
+                      "op": "replace",
+                      "path": "/EnderecoId",
+                      "value": resp.body,
                     };
-                    http.Response respFinal = await r.post(
-                      "Vendedor",
-                      bodyVend,
-                    );
-                    print(respFinal.statusCode);
-                    print(respFinal.body);
-                    if (respFinal.statusCode == 200) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const Login()),
-                      );
-                    } else if (respFinal.statusCode == 400) {
-                      print(respFinal.body);
-                      showDialog(
-                        context: context,
-                        builder:
-                            (context) => AlertDialog(
-                              title: Text("Existem campos não preenchidos"),
-                              content: Text(
-                                "Um ou mais campos sem informações",
-                              ),
-                              actions: [
-                                TextButton(
-                                  child: Text('Ok'),
-                                  onPressed: () => Navigator.pop(context),
+                    Map<String, dynamic> bodyPatchNum = {
+                      "op": "replace",
+                      "path": "/numeroResid",
+                      "value": _residenciaController.text,
+                    };
+                    http.Response rEnd = await r.patch("usuario/${user.id}", [
+                      bodyPatchEnd,
+                    ]);
+                    http.Response rNum = await r.patch("usuario/${user.id}", [
+                      bodyPatchNum,
+                    ]);
+                    if(rEnd.statusCode == 200 && rNum.statusCode == 200){
+                      ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Endereço cadastrado com sucesso!',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  backgroundColor: Colors.blue,
                                 ),
-                              ],
-                            ),
-                      );
+                              );
+                      await Future.delayed(const Duration(seconds: 2));
+                      print("ACABOU");
+                    }else{
+                      print(rNum.statusCode);
+                      print(rNum.body);
+                      print(rEnd.statusCode);
+                      print(rEnd.body);
                     }
-                  } else if (resp.statusCode == 400) {
-                    print(resp.body);
-                    showDialog(
-                      context: context,
-                      builder:
-                          (context) => AlertDialog(
-                            title: Text("Existem campos não preenchidos"),
-                            content: Text("Um ou mais campos sem informações"),
-                            actions: [
-                              TextButton(
-                                child: Text('Ok'),
-                                onPressed: () => Navigator.pop(context),
-                              ),
-                            ],
-                          ),
-                    );
                   } else {
                     showDialog(
                       context: context,
                       builder:
                           (context) => AlertDialog(
-                            title: Text("Erro de cadastro."),
+                            title: const Text("Erro de cadastro."),
                             content: Text("${resp.body},${resp.statusCode}"),
                             actions: [
                               TextButton(
-                                child: Text('Ok'),
+                                child: const Text('Ok'),
                                 onPressed: () => Navigator.pop(context),
                               ),
                             ],

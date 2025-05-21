@@ -4,19 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:voiture/Controlador/ReqResp.dart';
 import 'package:voiture/Modelos/usedSettings.dart' as uS;
-import 'package:voiture/menuPrincipal.dart';
-import 'package:voiture/perfilUser.dart';
+import 'package:voiture/Modelos/usuario.dart';
+import 'package:voiture/enderecoFinalCompra.dart';
 import 'package:http/http.dart' as http;
 
 class Pagamento extends StatefulWidget {
   final int idPeca;
+  
   final int numeroPecas;
 
-  const Pagamento({
-    Key? key,
-    required this.idPeca,
-    required this.numeroPecas,
-  }) : super(key: key);
+  const Pagamento({Key? key, required this.idPeca, required this.numeroPecas})
+    : super(key: key);
 
   @override
   _PagamentoState createState() => _PagamentoState();
@@ -28,7 +26,7 @@ class _PagamentoState extends State<Pagamento> {
   double _precoUnitario = 250.00;
   int _quantidadePecas = 1;
   double _totalCompra = 250.00;
-
+  Usuario user = Usuario.instance;
   final TextEditingController numCartao = TextEditingController();
   final TextEditingController validadeController = TextEditingController();
   final TextEditingController nomeController = TextEditingController();
@@ -36,12 +34,12 @@ class _PagamentoState extends State<Pagamento> {
 
   final maskCartaoFormatter = MaskTextInputFormatter(
     mask: '#### #### #### ####',
-    filter: { '#': RegExp(r'\d') },
+    filter: {'#': RegExp(r'\d')},
   );
 
   final maskValidadeFormatter = MaskTextInputFormatter(
     mask: '##/##',
-    filter: { '#': RegExp(r'\d') },
+    filter: {'#': RegExp(r'\d')},
   );
 
   @override
@@ -64,25 +62,36 @@ class _PagamentoState extends State<Pagamento> {
     });
   }
 
-   bool validarCompra() {
+  bool validarCompra() {
     final ccValidator = CreditCardValidator();
     final cardNumberWithoutSpaces = numCartao.text.replaceAll(' ', '');
+    final cardValidadewhithoutSpaces = validadeController.text.replaceAll(
+      '/',
+      '',
+    );
 
     print('Número do Cartão (com espaços): ${numCartao.text}');
     print('Número do Cartão (sem espaços): $cardNumberWithoutSpaces');
 
-    final results = ccValidator.validateCCNum(cardNumberWithoutSpaces);
-
-    print('Resultado da Validação: ${results.isValid}');
-    if (results.isValid) {
-      print('Bandeira Detectada: ${results.ccType}');
+    final resultsNum = ccValidator.validateCCNum(cardNumberWithoutSpaces);
+    final resultValidade = ccValidator.validateExpDate(
+      cardValidadewhithoutSpaces,
+    );
+    final resultCVV = ccValidator.validateCVV(
+      cvvController.text,
+      resultsNum.ccType,
+    );
+    print('Resultado da Validação: ${resultsNum.isValid}');
+    if (resultCVV.isValid && resultValidade.isValid || resultsNum.isValid) {
+      print('Bandeira Detectada: ${resultsNum.ccType}');
       return true;
     } else {
-      print('Número Inválido - Erro: ${results.message}'); // Imprime os erros de validação
+      print(
+        'Número Inválido - Erro: ${resultsNum.message}',
+      ); 
       return false;
     }
   }
-
 
   void _selecionarCartaoCredito(bool? value) {
     setState(() {
@@ -95,24 +104,6 @@ class _PagamentoState extends State<Pagamento> {
     setState(() {
       _cartaoDebitoSelecionado = value ?? false;
       if (_cartaoDebitoSelecionado) _cartaoCreditoSelecionado = false;
-    });
-  }
-
-  int _selectedIndex = 0;
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      if (index == 0) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const MenuPrincipal()),
-        );
-      } else if (index == 3) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const PerfilUser()),
-        );
-      }
     });
   }
 
@@ -137,10 +128,7 @@ class _PagamentoState extends State<Pagamento> {
             const SizedBox(height: 16.0),
             Text(
               'Resumo da compra:',
-              style: TextStyle(
-                fontSize: 18.0,
-                color: Colors.grey[400],
-              ),
+              style: TextStyle(fontSize: 18.0, color: Colors.grey[400]),
             ),
             Text(
               '${widget.numeroPecas}x R\$ ${_precoUnitario.toStringAsFixed(2)}',
@@ -163,7 +151,10 @@ class _PagamentoState extends State<Pagamento> {
                   onChanged: _selecionarCartaoCredito,
                   activeColor: Colors.blue,
                 ),
-                const Text('Cartão de Crédito', style: TextStyle(color: Colors.black)),
+                const Text(
+                  'Cartão de Crédito',
+                  style: TextStyle(color: Colors.black),
+                ),
               ],
             ),
             Row(
@@ -173,7 +164,10 @@ class _PagamentoState extends State<Pagamento> {
                   onChanged: _selecionarCartaoDebito,
                   activeColor: Colors.blue,
                 ),
-                const Text('Cartão de Débito', style: TextStyle(color: Colors.black)),
+                const Text(
+                  'Cartão de Débito',
+                  style: TextStyle(color: Colors.black),
+                ),
               ],
             ),
             if (_cartaoCreditoSelecionado || _cartaoDebitoSelecionado)
@@ -192,7 +186,9 @@ class _PagamentoState extends State<Pagamento> {
                               labelText: 'Número do cartão',
                               labelStyle: TextStyle(color: Colors.grey[400]),
                               enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.grey[400]!),
+                                borderSide: BorderSide(
+                                  color: Colors.grey[400]!,
+                                ),
                               ),
                               focusedBorder: const OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.blue),
@@ -215,7 +211,9 @@ class _PagamentoState extends State<Pagamento> {
                               counterText: '',
                               labelStyle: TextStyle(color: Colors.grey[400]),
                               enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.grey[400]!),
+                                borderSide: BorderSide(
+                                  color: Colors.grey[400]!,
+                                ),
                               ),
                               focusedBorder: const OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.blue),
@@ -237,7 +235,9 @@ class _PagamentoState extends State<Pagamento> {
                               labelText: 'Nome no cartão',
                               labelStyle: TextStyle(color: Colors.grey[400]),
                               enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.grey[400]!),
+                                borderSide: BorderSide(
+                                  color: Colors.grey[400]!,
+                                ),
                               ),
                               focusedBorder: const OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.blue),
@@ -257,7 +257,9 @@ class _PagamentoState extends State<Pagamento> {
                               counterText: '',
                               labelStyle: TextStyle(color: Colors.grey[400]),
                               enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.grey[400]!),
+                                borderSide: BorderSide(
+                                  color: Colors.grey[400]!,
+                                ),
                               ),
                               focusedBorder: const OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.blue),
@@ -279,22 +281,80 @@ class _PagamentoState extends State<Pagamento> {
                   backgroundColor: Colors.blue,
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                 ),
-                onPressed: () {
+                onPressed: () async {
                   if (!_cartaoCreditoSelecionado && !_cartaoDebitoSelecionado) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Selecione uma forma de pagamento')),
+                      const SnackBar(
+                        content: Text('Selecione uma forma de pagamento'),
+                      ),
                     );
                     return;
                   }
-                  final metodo = _cartaoCreditoSelecionado ? 'Crédito' : 'Débito';
+                  final metodo =
+                      _cartaoCreditoSelecionado ? 'Crédito' : 'Débito';
                   if (validarCompra()) {
-                    // TODO: integrar processamento de pagamento
+                    final now = DateTime.now();
+                    final isoString = now.toIso8601String();
+                    ReqResp r = ReqResp(
+                      "https://192.168.18.61:7101",
+                      httpClient: createIgnoringCertificateClient(),
+                    );
+                    print(user.id);
+                    Map<String, dynamic> body = {
+                      "ClienteId": user.id,
+                      "Status": "Aprovado",
+                      "Tipopagamento": "Cartão",
+                      "MetodoPagamento": metodo,
+                      "PecaId": widget.idPeca,
+                      "PrecoPeca": _totalCompra,
+                      "DataHora": isoString,
+                    };
+                    http.Response respPeca = await r.getById(
+                      "peca/",
+                      widget.idPeca,
+                    );
+                    Map<String, dynamic> data = jsonDecode(respPeca.body);
+                    http.Response resp = await r.post("pagamento", body);
+                    http.Response idVend = await r.getByName(
+                      "vendedor/verEmail/",
+                      data["vendedorEmail"],
+                    );
+                    if (resp.statusCode == 201) {
+                      Map<String, dynamic> bodyHistorico = {
+                        "UsuarioId": user.id,
+                        "VendedorId": idVend.body,
+                        "PecaId": widget.idPeca,
+                      };
+                      http.Response historico = await r.post(
+                        "VendedorCliente",
+                        bodyHistorico,
+                      );
+                      print(historico.statusCode);
+                      print(historico.body);
+                      if (historico.statusCode == 201) {
+                        http.Response peca = await r.delete(
+                          "peca/",
+                          widget.idPeca,
+                        );
+                        if (peca.statusCode == 200 || peca.statusCode == 204) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EnderecoFinalCompra(),
+                            ),
+                          );
+                        }
+                      }
+                    } else {
+                      print("${resp.statusCode}\n${resp.body}");
+                    }
                     print('Pagamento com Cartão de $metodo aprovado');
                   } else {
                     print(numCartao.text);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      
-                      const SnackBar(content: Text('Número de cartão inválido')),
+                      const SnackBar(
+                        content: Text('Número de cartão inválido'),
+                      ),
                     );
                   }
                 },
@@ -307,10 +367,7 @@ class _PagamentoState extends State<Pagamento> {
           ],
         ),
       ),
-      bottomNavigationBar: uS.UsedBottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-      ),
+      bottomNavigationBar: uS.UsedBottomNavigationBar(),
     );
   }
 }

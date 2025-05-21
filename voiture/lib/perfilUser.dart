@@ -2,18 +2,14 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:voiture/Controlador/ReqResp.dart';
-import 'package:voiture/Modelos/usuario.dart';
-import 'package:http/http.dart' as http;
-import 'package:voiture/PerfilVend.dart';
 import 'package:voiture/menuPrincipal.dart';
-import 'package:http/io_client.dart' as io;
 import 'package:voiture/Modelos/usedSettings.dart' as uS;
 
 
 /* -Classe StateFul (para entender mais, veja a classe "buscarUnicaPeca"), muda quando acionada para buscar os dados do usuario;
-   -Classe destinada para o perfil do "cliente"(usuario com a role "usuario") */
+   -Classe destinada para o perfil do "cliente"(usuario com a role "usuario") 
+*/
 
-// Executa a requisição e retorna o JSON do usuário
 Future<String> fetchUsuario() async {
   final r = ReqResp(
     "https://192.168.18.61:7101",
@@ -136,30 +132,7 @@ class _ProfilePageState extends State<ProfilePage> {
           );
         },
       ),
-      bottomNavigationBar: Container(
-        width: double.infinity,
-        color: Colors.black,
-       
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _navItem(Icons.home_outlined, 'Menu', () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const MenuPrincipal()));
-            }),
-            _navItem(Icons.list_alt_outlined, 'Pedidos', () {}),
-            _navItem(Icons.shopping_cart_outlined, 'Carrinho', () {}),
-            _navItem(Icons.person, 'Perfil', () {
-              if (Usuario.instance.role == 'USUARIO') {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const PerfilUser()));
-              } else {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const PerfilVend()));
-              }
-            }),
-          ],
-        ),
-      ),
+      bottomNavigationBar: uS.UsedBottomNavigationBar()
     );
   }
 
@@ -178,18 +151,6 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Text(value, style: Theme.of(context).textTheme.bodyMedium),
           ),
         ],
-      );
-
-  Widget _navItem(IconData icon, String label, VoidCallback onTap) => GestureDetector(
-        onTap: onTap,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: Colors.white),
-            const SizedBox(height: 4),
-            Text(label, style: const TextStyle(color: Colors.white, fontSize: 12)),
-          ],
-        ),
       );
 }
 

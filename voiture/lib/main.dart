@@ -51,7 +51,7 @@ class Main extends StatelessWidget {
           ),
         ),
       ),
-      home: const GetStartedPage(), // Usando a nova página inicial
+      home: const GetStartedPage(), 
     );
   }
 }
@@ -62,18 +62,17 @@ class GetStartedPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // Define o fundo da tela como preto
+      backgroundColor: Colors.black, 
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center, // Centraliza os elementos verticalmente
+          mainAxisAlignment: MainAxisAlignment.center, 
           children: <Widget>[
             Image.asset(
               'assets/voiturelogo.jpg',
-              height: 150.0, // Ajuste a altura conforme necessário
-              // Você pode adicionar width se quiser controlar a largura
-              fit: BoxFit.contain, // Garante que a imagem inteira seja visível
+              height: 150.0, 
+              fit: BoxFit.contain, 
             ),
-            const SizedBox(height: 48.0), // Espaço entre a imagem e o botão
+            const SizedBox(height: 48.0), 
             ElevatedButton(
               onPressed: () {
                 Navigator.push(

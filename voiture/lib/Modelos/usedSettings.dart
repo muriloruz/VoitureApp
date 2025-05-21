@@ -1,29 +1,69 @@
 import 'package:flutter/material.dart';
+import 'package:voiture/PerfilVend.dart';
+import 'package:voiture/carrinhoScreen.dart';
 import 'package:voiture/login.dart';
 import 'package:voiture/menuPrincipal.dart';
+import 'package:voiture/pedidos.dart';
+import 'package:voiture/perfilUser.dart';
+import 'package:voiture/todasPecas.dart';
+import 'package:voiture/Modelos/usuario.dart';
 
-/* Classe para usar o Appbar e BottomNavBar para todas as telas*/
+/* Classe para usar o Appbar e BottomNavBar para todas as telas, modelo para implementação mais de uma vez*/
 
 
 class UsedBottomNavigationBar extends StatelessWidget {
-  final int currentIndex;
-  final ValueChanged<int> onTap;
-
   const UsedBottomNavigationBar({
     super.key,
-    required this.currentIndex,
-    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    Usuario user = Usuario.instance;
+    int _selectedIndex = 0;
+    void _onItemTapped(int index) {
+    index =_selectedIndex;
+    switch (index) {
+      case 0:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MenuPrincipal()),
+        );
+        break;
+      case 1:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const PedidosScreen()),
+        );
+        break;
+      case 2:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const CarrinhoScreen()),
+        );
+        break;
+      case 3:
+        if (user.role == 'USUARIO') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const PerfilUser()),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const PerfilVend()),
+          );
+        }
+        break;
+    }
+  }
+
     return BottomNavigationBar(
-      currentIndex: currentIndex,
+      currentIndex: _selectedIndex,
       selectedItemColor: Colors.white,
       unselectedItemColor: Colors.white70,
       backgroundColor: Colors.black,
       elevation: 8,
-      onTap: onTap,
+      onTap: _onItemTapped,
       type: BottomNavigationBarType.fixed,
       items: const [
         BottomNavigationBarItem(
@@ -61,6 +101,7 @@ class UsedAppBar extends StatelessWidget implements PreferredSizeWidget{
         onPressed: () {
           if(nome == "perfil") {Navigator.push(context, MaterialPageRoute(builder: (context) => MenuPrincipal()));}
           else if(nome == "menu") {Navigator.push(context, MaterialPageRoute(builder: (context) => Login()));}
+          else if(nome == "peca"){Navigator.push(context, MaterialPageRoute(builder: (context) => BuscarTdsPeca()));}
           else {Navigator.pop(context);}
         },
       ),

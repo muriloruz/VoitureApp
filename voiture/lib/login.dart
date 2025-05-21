@@ -206,8 +206,7 @@ Widget build(BuildContext context) {
                       );
                         await Future.delayed(Duration(seconds: 2));
                     }else if(response.statusCode == 400){
-                      
-                        String rBody = response.body;
+                           
                         showDialog(
                           context: context,
                           builder:  (context) => AlertDialog(

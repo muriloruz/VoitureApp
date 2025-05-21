@@ -2,16 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:voiture/Controlador/ReqResp.dart';
 import 'package:voiture/Modelos/usedSettings.dart' as uS;
 import 'package:http/http.dart' as http;
-import 'package:voiture/PerfilVend.dart';
 import 'dart:convert';
-
-import 'package:voiture/menuPrincipal.dart';
 import 'package:voiture/perfilPeca.dart';
-import 'package:voiture/perfilUser.dart';
-
 /*
-  Classe que exibe todas as peças, do tipo StateFul(Ver classe buscarUnicaPeca), usada para mudar quando o user abri-lá e aparecer
+  Classe que exibe todas as peças, do tipo StateFul(Ver classe buscarUnicaPeca), usada para mudar quando o user abri-lá e aparecer as peças
  */
+
 class BuscarTdsPeca extends StatefulWidget {
   const BuscarTdsPeca({super.key});
 
@@ -20,7 +16,6 @@ class BuscarTdsPeca extends StatefulWidget {
 }
 
 class _BuscarTdsPecaState extends State<BuscarTdsPeca> {
-  int _selectedIndex = 0;
   final TextEditingController _searchController = TextEditingController();
   List<dynamic> _pecas = [];
   bool _isLoading = true;
@@ -62,47 +57,6 @@ class _BuscarTdsPecaState extends State<BuscarTdsPeca> {
   void initState() {
     super.initState();
     _buscarTodasPecas();
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      switch (index) {
-        case 0:
-          print('Menu selecionado');
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const MenuPrincipal(),
-            ), // Exemplo
-          );
-          break;
-        case 1:
-          print('Pedidos selecionados');
-          // Navegar para a tela de pedidos
-          break;
-        case 2:
-          print('Carrinho selecionado');
-          // Navegar para a tela de carrinho
-          break;
-        case 3:
-          print('Perfil selecionado');
-          print('Navegar para a tela Perfil');
-          if (user.role == 'USUARIO') {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const PerfilUser()),
-            );
-          } else {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const PerfilVend()),
-            );
-          }
-          print('Perfil pressionado');
-          break;
-      }
-    });
   }
 
   @override
@@ -201,10 +155,7 @@ class _BuscarTdsPecaState extends State<BuscarTdsPeca> {
           ),
         ],
       ),
-      bottomNavigationBar: uS.UsedBottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-      ),
+      bottomNavigationBar: uS.UsedBottomNavigationBar(),
     );
   }
 }

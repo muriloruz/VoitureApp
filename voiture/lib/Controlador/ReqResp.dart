@@ -32,8 +32,8 @@ class ReqResp {
     return await httpClient.patch(uri, headers: allHeaders, body: jsonBody); 
   }
 
-  Future<http.Response> delete(String endpoint, {Map<String, String>? headers}) async {
-    final uri = Uri.parse('$baseUrl/$endpoint');
+  Future<http.Response> delete(String endpoint, int id,{Map<String, String>? headers}) async {
+    final uri = Uri.parse('$baseUrl/$endpoint/$id');
     final allHeaders = {...defaultHeaders, ...?headers};
     return await httpClient.delete(uri, headers: allHeaders); 
   }
@@ -46,18 +46,8 @@ class ReqResp {
     
     return await get('$endpoint$id', headers: headers);
   }
-  Future<http.Response> postByName(String name, dynamic body, {Map<String, String>? headers}) async {
-    final requestBody = {...body, 'name': name};
-    return await post('users', requestBody, headers: headers);
-  }
+  
 
-  Future<http.Response> patchByName(String name, dynamic body, {Map<String, String>? headers}) async {
-    return await patch('users/$name', body, headers: headers);
-  }
-
-  Future<http.Response> deleteByName(String name, {Map<String, String>? headers}) async {
-    return await delete('users/$name', headers: headers);
-  }
   Map<String, dynamic>? decodeJwtToken(String token) {
   if (token.isEmpty) {
     return null;

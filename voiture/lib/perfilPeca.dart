@@ -2,15 +2,16 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:voiture/Controlador/ReqResp.dart';
+import 'package:voiture/Modelos/peca.dart';
 import 'package:voiture/Modelos/usedSettings.dart' as uS;
-import 'package:voiture/PerfilVend.dart';
 import 'package:voiture/menuPrincipal.dart';
 import 'package:voiture/pagamento.dart';
-import 'package:voiture/perfilUser.dart';
 import 'package:http/http.dart' as http;
+import 'package:voiture/Modelos/carrinho.dart' as car;
+
 
 class PerfilPeca extends StatefulWidget {
-  final int idPeca; // Exemplo de como você pode passar o ID da peça
+  final int idPeca; 
   const PerfilPeca({Key? key, required this.idPeca}) : super(key: key);
 
   @override
@@ -18,7 +19,7 @@ class PerfilPeca extends StatefulWidget {
 }
 
 class _PerfilPecaState extends State<PerfilPeca> {
-  // Dados que serão buscados da API
+  
   String _nomePeca = 'Radiador Denso BC116420-45802C';
   double _preco = 399.00;
   String _descricao =
@@ -26,58 +27,20 @@ class _PerfilPecaState extends State<PerfilPeca> {
   String _fabricante = 'ThermoMax';
   String _garantia = 'Garantia: 12 meses';
   String _vendedor = 'Vendedor: Jacinto Pinto';
-  String _emailVendedor = 'jacinto.pinto@email.com'; // Exemplo de email
-  String _telefoneVendedor = '(11) 98765-4321'; // Exemplo de telefone
+  String _emailVendedor = 'jacinto.pinto@email.com'; 
+  String _telefoneVendedor = '(11) 98765-4321'; 
   String _imagemUrl =
-      'https://192.168.18.61:7101/imagens/1000100451.jpg'; // URL da imagem (substitua pela sua)
+      'https://192.168.18.61:7101/imagens/1000100451.jpg'; 
+  bool _isFavorited = false;
 
   @override
   void initState() {
     super.initState();
-    _carregarDadosPeca(); // Chamando a função para buscar os dados da API
-  }
-
-  int _selectedIndex = 0;
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      switch (index) {
-        case 0:
-          print('Navegar para a tela Início');
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const MenuPrincipal(),
-            ), // Exemplo
-          );
-          break;
-        case 1:
-          // Navegar para a tela de pedidos
-          break;
-        case 2:
-          // Navegar para a tela de carrinho
-          break;
-        case 3:
-          print('Navegar para a tela Perfil');
-          if (user.role == 'USUARIO') {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const PerfilUser()),
-            );
-          } else {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const PerfilVend()),
-            );
-          }
-          print('Perfil pressionado');
-          break;
-      }
-    });
+    _carregarDadosPeca(); 
   }
 
   Future<void> _carregarDadosPeca() async {
-    // Simulação de chamada à API (substitua pela sua lógica real)
+    
     await Future.delayed(const Duration(seconds: 2));
     ReqResp r = new ReqResp(
       "https://192.168.18.61:7101",
@@ -86,7 +49,6 @@ class _PerfilPecaState extends State<PerfilPeca> {
     try {
       http.Response resp = await r.getById("peca/", widget.idPeca);
       if (resp.statusCode == 200) {
-        // Processar a resposta da API e atualizar o estado
         Map<String, dynamic> data = jsonDecode(resp.body);
         setState(() {
           _nomePeca = data['nomePeca'];
@@ -100,7 +62,6 @@ class _PerfilPecaState extends State<PerfilPeca> {
           _imagemUrl = data['imagem'];
         });
       } else {
-        // Lidar com erros na chamada da API
         print('Erro ao carregar dados da peça: ${resp.statusCode}');
       }
     } catch (e) {
@@ -111,7 +72,7 @@ class _PerfilPecaState extends State<PerfilPeca> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: uS.UsedAppBar(nome: "perfil"), // Usando a AppBar personalizada
+      appBar: uS.UsedAppBar(nome: "perfilPeca"),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -127,13 +88,89 @@ class _PerfilPecaState extends State<PerfilPeca> {
               ),
             ),
             const SizedBox(height: 4.0),
-            Text(
-              '1x R\$ ${_preco.toStringAsFixed(2)}',
-              style: const TextStyle(
-                fontSize: 16.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.green,
-              ),
+            Row(
+              children: [
+                Text(
+                  '1x R\$ ${_preco.toStringAsFixed(2)}',
+                  style: const TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
+                ),
+                const Spacer(),
+                IconButton(
+                  iconSize: 20.0,
+                  splashRadius: 20.0,
+                  tooltip: _isFavorited ? 'Desfavoritar' : 'Favoritar',
+                  icon: Icon(
+                    _isFavorited ? Icons.favorite : Icons.favorite_border,
+                    color: _isFavorited ? Colors.red : Colors.grey,
+                  ),
+                  onPressed: () async {
+                    setState(() {
+                      if (_isFavorited == false) {
+                        _isFavorited = true;
+                      } else {
+                        _isFavorited = true;
+                      }
+                    });
+                    if (_isFavorited == true && user.role != 'VENDEDOR') {
+                      ReqResp r = new ReqResp(
+                        "https://192.168.18.61:7101",
+                        httpClient: createIgnoringCertificateClient(),
+                      );
+                      Map<String, dynamic> body = {
+                        "userId": user.id,
+                        "pecaId": widget.idPeca,
+                      };
+                      http.Response resp = await r.post("favorito", body);
+                      if (resp.statusCode == 200) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Peça já favoritada previamente'),
+                          ),
+                        );
+                      }
+                      if (resp.statusCode == 201) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Peça adicionada aos favoritos!',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            backgroundColor: Colors.blue,
+                          ),
+                        );
+                      }
+                      print(resp.body);
+                      print(resp.statusCode);
+                    } else {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (BuildContext ctx) {
+                          return AlertDialog(
+                            title: const Text('ERRO 35'),
+                            content: const Text(
+                              'Vendedores não podem favoritar nem comprar peças',
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(ctx).pop();
+                                },
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                    print('Favorito: $_isFavorited');
+                  },
+                ),
+              ],
             ),
             const SizedBox(height: 16.0),
             SizedBox(
@@ -290,9 +327,41 @@ class _PerfilPecaState extends State<PerfilPeca> {
                       padding: const EdgeInsets.symmetric(vertical: 12.0),
                     ),
                     onPressed: () {
-                      // Lógica para comprar agora
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => Pagamento(idPeca: widget.idPeca, numeroPecas: 1)));
+                      if (user.role == 'VENDEDOR') {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext ctx) {
+                            return AlertDialog(
+                              title: const Text('ERRO 35'),
+                              content: const Text(
+                                'Vendedores não podem favoritar nem comprar peças',
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(ctx).pop();
+                                  },
+                                  child: const Text('OK'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) => Pagamento(
+                                  idPeca: widget.idPeca,
+                                  numeroPecas: 1,
+                                ),
+                          ),
+                        );
+                      }
                     },
+
                     child: const Text(
                       'Comprar agora',
                       style: TextStyle(fontSize: 16.0, color: Colors.white),
@@ -308,7 +377,10 @@ class _PerfilPecaState extends State<PerfilPeca> {
                       padding: const EdgeInsets.symmetric(vertical: 12.0),
                     ),
                     onPressed: () {
-                      // Lógica para adicionar ao carrinho
+                      Peca p = new Peca(nome: _nomePeca,descricao: _descricao,garantia: _garantia,imagemFile: _imagemUrl
+                      ,modelo: _fabricante,valor: _preco,vendId: _vendedor, id: widget.idPeca );
+                      car.Carrinho  c =  car.Carrinho.instance;
+                      c.adicionarPeca(p);
                       print('Adicionar ao carrinho pressionado');
                     },
                     child: const Text(
@@ -322,10 +394,7 @@ class _PerfilPecaState extends State<PerfilPeca> {
           ],
         ),
       ),
-      bottomNavigationBar: uS.UsedBottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-      ), // Usando a BottomNavigationBar personalizada
+      bottomNavigationBar: uS.UsedBottomNavigationBar(), 
     );
   }
 }
