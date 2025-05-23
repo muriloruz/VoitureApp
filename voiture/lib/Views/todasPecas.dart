@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:voiture/Controlador/ReqResp.dart';
 import 'package:voiture/Modelos/usedSettings.dart' as uS;
 import 'package:http/http.dart' as http;
+import 'package:voiture/buscarUnicaPeca.dart';
 import 'dart:convert';
 import 'package:voiture/perfilPeca.dart';
 /*
@@ -78,8 +79,15 @@ class _BuscarTdsPecaState extends State<BuscarTdsPeca> {
                 filled: true,
                 fillColor: Colors.grey[200],
               ),
-              onSubmitted: (value) {
-                print('Buscar: $value');
+              onSubmitted: (valorDigitado) {
+                Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) =>
+                                BuscarUnicaPeca(nomePeca: valorDigitado),
+                      ),
+                    );
               },
             ),
           ),

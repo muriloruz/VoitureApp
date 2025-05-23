@@ -24,7 +24,6 @@ void getToken() async{
     final http.Response resposta = await r.getByName("usuario/single/",segQuebra[0].trim());
     Map<String, dynamic> jsonData = jsonDecode(resposta.body);
     String id = jsonData['id'];
-    //print(id);
     user.id = id;
     
   }catch(err){

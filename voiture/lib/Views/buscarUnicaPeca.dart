@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:voiture/Modelos/usedSettings.dart' as uS;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'package:voiture/perfilPeca.dart';
 
 
@@ -79,7 +78,7 @@ class _BuscarUnicaPecaState extends State<BuscarUnicaPeca> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: uS.UsedAppBar(nome: "peca"),
+      appBar: uS.UsedAppBar(nome: "pop"),
       body: Column(
         children: [
           Padding(

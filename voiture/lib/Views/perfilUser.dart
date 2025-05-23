@@ -2,11 +2,14 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:voiture/Controlador/ReqResp.dart';
+import 'package:voiture/alterarDados.dart';
+import 'package:voiture/enderecoFinalCompra.dart';
 import 'package:voiture/menuPrincipal.dart';
 import 'package:voiture/Modelos/usedSettings.dart' as uS;
 
-/*-Classe StateFul (para entender mais, veja a classe "buscarUnicaPeca"), muda quando acionada para buscar os dados do usuario;
-   -Classe destinada para o perfil do "vendedor"(usuario com a role "vendedor") 
+
+/* -Classe StateFul (para entender mais, veja a classe "buscarUnicaPeca"), muda quando acionada para buscar os dados do usuario;
+   -Classe destinada para o perfil do "cliente"(usuario com a role "usuario") 
 */
 
 Future<String> fetchUsuario() async {
@@ -16,14 +19,14 @@ Future<String> fetchUsuario() async {
   );
   final dcPayload = r.decodeJwtToken(user.token);
   final id = dcPayload.toString().split(":")[1].split(",")[0].trim();
-  final resp = await r.getByName("Vendedor/", id);
+  final resp = await r.getByName("usuario/single/", id);
   return resp.body;
 }
 
-void main() => runApp(const PerfilVend());
+void main() => runApp(const PerfilUser());
 
-class PerfilVend extends StatelessWidget {
-  const PerfilVend ({super.key});
+class PerfilUser extends StatelessWidget {
+  const PerfilUser({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +98,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: uS.UsedAppBar(nome:"perfil"),
+      appBar: uS.UsedAppBar(nome: "perfil"),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _usuarioFuture,
         builder: (context, snapshot) {
@@ -113,44 +116,31 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 _buildField('Nome', userJson['nome']),
                 const SizedBox(height: 12),
-                _buildField('E‑mail', userJson['userName']),
+                _buildField('E‑mail', userJson['email']),
                 const SizedBox(height: 12),
-                _buildField('Celular', userJson['telefoneVend'] ?? '(não informado)'),
+                _buildField('Celular', userJson['celular'] ?? '(não informado)'),
                 const SizedBox(height: 12),
-                _buildField('CNPJ', userJson['cnpj']),
+                _buildField('CPF', userJson['cpf']),
                 const Spacer(),
-                Row(
-        children: [
-                Expanded(
+                SizedBox(
+                  width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      /*AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
-                      IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
-                      IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII*/
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => AlterarDados()));
                     },
-                    child: const Text('Salvar'),
+                    child: const Text('Alterar dados'),
                   ),
                 ),
-                const SizedBox(width: 16.0),
-                Expanded(
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      /*
-                          AQUIIIIIIIIIIIIIIIIII
-                          AQUIIIIIIIIIIIIII
-                          AQUIIIIIIIIII
-                          AQUIIIIII
-                          AQUIII
-                       */
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => EnderecoFinalCompra()));
                     },
-                    
-                    child: const Text('Forma de pagamento',style: TextStyle(fontSize: 12.0)),
-                    
-                    
+                    child: const Text('Alterar Endereço'),
                   ),
                 ),
-              ],
-      		),
               ],
             ),
           );

@@ -2,12 +2,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:voiture/Controlador/ReqResp.dart';
+import 'package:voiture/alterarDados.dart';
 import 'package:voiture/menuPrincipal.dart';
 import 'package:voiture/Modelos/usedSettings.dart' as uS;
 
-
-/* -Classe StateFul (para entender mais, veja a classe "buscarUnicaPeca"), muda quando acionada para buscar os dados do usuario;
-   -Classe destinada para o perfil do "cliente"(usuario com a role "usuario") 
+/*-Classe StateFul (para entender mais, veja a classe "buscarUnicaPeca"), muda quando acionada para buscar os dados do usuario;
+   -Classe destinada para o perfil do "vendedor"(usuario com a role "vendedor") 
 */
 
 Future<String> fetchUsuario() async {
@@ -17,14 +17,14 @@ Future<String> fetchUsuario() async {
   );
   final dcPayload = r.decodeJwtToken(user.token);
   final id = dcPayload.toString().split(":")[1].split(",")[0].trim();
-  final resp = await r.getByName("usuario/single/", id);
+  final resp = await r.getByName("Vendedor/", id);
   return resp.body;
 }
 
-void main() => runApp(const PerfilUser());
+void main() => runApp(const PerfilVend());
 
-class PerfilUser extends StatelessWidget {
-  const PerfilUser({super.key});
+class PerfilVend extends StatelessWidget {
+  const PerfilVend ({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +96,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: uS.UsedAppBar(nome: "perfil"),
+      appBar: uS.UsedAppBar(nome:"perfil"),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _usuarioFuture,
         builder: (context, snapshot) {
@@ -114,19 +114,42 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 _buildField('Nome', userJson['nome']),
                 const SizedBox(height: 12),
-                _buildField('E‑mail', userJson['email']),
+                _buildField('E‑mail', userJson['userName']),
                 const SizedBox(height: 12),
-                _buildField('Celular', userJson['celular'] ?? '(não informado)'),
+                _buildField('Celular', userJson['telefoneVend'] ?? '(não informado)'),
                 const SizedBox(height: 12),
-                _buildField('CPF', userJson['cpf']),
+                _buildField('CNPJ', userJson['cnpj']),
                 const Spacer(),
-                SizedBox(
-                  width: double.infinity,
+                Row(
+        children: [
+                Expanded(
                   child: ElevatedButton(
-                    onPressed: () {},
-                    child: const Text('Alterar dados'),
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => AlterarDados()));
+                    },
+                    child: const Text('Alterar Dados'),
                   ),
                 ),
+                const SizedBox(width: 16.0),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      /*
+                          AQUIIIIIIIIIIIIIIIIII
+                          AQUIIIIIIIIIIIIII
+                          AQUIIIIIIIIII
+                          AQUIIIIII
+                          AQUIII
+                       */
+                    },
+                    
+                    child: const Text('Forma de pagamento',style: TextStyle(fontSize: 12.0)),
+                    
+                    
+                  ),
+                ),
+              ],
+      		),
               ],
             ),
           );

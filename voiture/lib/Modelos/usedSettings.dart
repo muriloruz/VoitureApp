@@ -11,17 +11,23 @@ import 'package:voiture/Modelos/usuario.dart';
 /* Classe para usar o Appbar e BottomNavBar para todas as telas, modelo para implementação mais de uma vez*/
 
 
-class UsedBottomNavigationBar extends StatelessWidget {
-  const UsedBottomNavigationBar({
-    super.key,
-  });
+class UsedBottomNavigationBar extends StatefulWidget {
+  const UsedBottomNavigationBar({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<UsedBottomNavigationBar> createState() => _MyBottomNavBarScreenState();
+}
+
+class _MyBottomNavBarScreenState extends State<UsedBottomNavigationBar> {
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
     Usuario user = Usuario.instance;
-    int _selectedIndex = 0;
-    void _onItemTapped(int index) {
-    index =_selectedIndex;
+
     switch (index) {
       case 0:
         Navigator.pushReplacement(
@@ -47,16 +53,26 @@ class UsedBottomNavigationBar extends StatelessWidget {
             context,
             MaterialPageRoute(builder: (context) => const PerfilUser()),
           );
-        } else {
+        } else if (user.role == 'VENDEDOR') {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const PerfilVend()),
           );
+        } else {
+          print('Role do usuário desconhecida: ${user.role}');
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const Login()),
+          );
         }
+        break;
+      default:
         break;
     }
   }
 
+  @override
+  Widget build(BuildContext context) {
     return BottomNavigationBar(
       currentIndex: _selectedIndex,
       selectedItemColor: Colors.white,

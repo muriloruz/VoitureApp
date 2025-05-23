@@ -1,5 +1,3 @@
-import 'dart:io';
-
 class Peca {
   /*
     - Classe modelo para salvar os dados de uma peça.

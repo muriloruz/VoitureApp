@@ -56,7 +56,7 @@ class ReqResp {
   try {
     final parts = token.split('.');
     if (parts.length != 3) {
-      return null; // Token JWT inválido
+      return null; 
     }
 
     final payloadBase64 = parts[1];
