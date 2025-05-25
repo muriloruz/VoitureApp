@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:voiture/Controlador/ReqResp.dart';
 import 'package:voiture/Modelos/usedSettings.dart' as uS;
 import 'package:http/http.dart' as http;
-import 'package:voiture/buscarUnicaPeca.dart';
+import 'package:voiture/Views/buscarUnicaPeca.dart';
 import 'dart:convert';
-import 'package:voiture/perfilPeca.dart';
+import 'package:voiture/Views/perfilPeca.dart';
 /*
   Classe que exibe todas as peças, do tipo StateFul(Ver classe buscarUnicaPeca), usada para mudar quando o user abri-lá e aparecer as peças
  */

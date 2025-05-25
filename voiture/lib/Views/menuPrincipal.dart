@@ -3,11 +3,11 @@ import 'package:voiture/Modelos/usedSettings.dart' as uS;
 import 'package:flutter/material.dart';
 import 'package:voiture/Controlador/ReqResp.dart';
 import 'package:voiture/Modelos/usuario.dart';
-import 'package:voiture/anunciarPecas.dart';
-import 'package:voiture/buscarUnicaPeca.dart';
-import 'package:voiture/favoritos.dart';
+import 'package:voiture/Views/anunciarPecas.dart';
+import 'package:voiture/Views/buscarUnicaPeca.dart';
+import 'package:voiture/Views/favoritos.dart';
 import 'package:http/http.dart' as http;
-import 'package:voiture/todasPecas.dart';
+import 'package:voiture/Views/todasPecas.dart';
 
 /* - Classe menu, aparece depois de efetuar o login, ela tem os botões para anunciar peça, ver todas as peças e por ultimo ver os favoritos 
    - "Anunciar Peça" só funciona se a role do user for "vendedor";

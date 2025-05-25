@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:voiture/PerfilVend.dart';
-import 'package:voiture/carrinhoScreen.dart';
-import 'package:voiture/login.dart';
-import 'package:voiture/menuPrincipal.dart';
-import 'package:voiture/pedidos.dart';
-import 'package:voiture/perfilUser.dart';
-import 'package:voiture/todasPecas.dart';
+import 'package:voiture/Views/PerfilVend.dart';
+import 'package:voiture/Views/carrinhoScreen.dart';
+import 'package:voiture/Views/login.dart';
+import 'package:voiture/Views/menuPrincipal.dart';
+import 'package:voiture/Views/pedidos.dart';
+import 'package:voiture/Views/perfilUser.dart';
+import 'package:voiture/Views/todasPecas.dart';
 import 'package:voiture/Modelos/usuario.dart';
 
 /* Classe para usar o Appbar e BottomNavBar para todas as telas, modelo para implementação mais de uma vez*/
@@ -118,6 +118,11 @@ class UsedAppBar extends StatelessWidget implements PreferredSizeWidget{
           if(nome == "perfil") {Navigator.push(context, MaterialPageRoute(builder: (context) => MenuPrincipal()));}
           else if(nome == "menu") {Navigator.push(context, MaterialPageRoute(builder: (context) => Login()));}
           else if(nome == "peca"){Navigator.push(context, MaterialPageRoute(builder: (context) => BuscarTdsPeca()));}
+          else if( nome == "Editar Perfil"){
+            Usuario user = Usuario.instance;
+            if(user.role == 'USUARIO') {Navigator.push(context, MaterialPageRoute(builder: (context) => PerfilUser()));}
+            else {Navigator.push(context, MaterialPageRoute(builder: (context) => PerfilVend()));}
+          }
           else {Navigator.pop(context);}
         },
       ),

@@ -2,9 +2,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:voiture/Controlador/ReqResp.dart';
-import 'package:voiture/alterarDados.dart';
-import 'package:voiture/enderecoFinalCompra.dart';
-import 'package:voiture/menuPrincipal.dart';
+import 'package:voiture/Views/alterarDados.dart';
+import 'package:voiture/Views/enderecoFinalCompra.dart';
+import 'package:voiture/Views/menuPrincipal.dart';
 import 'package:voiture/Modelos/usedSettings.dart' as uS;
 
 
@@ -116,9 +116,9 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 _buildField('Nome', userJson['nome']),
                 const SizedBox(height: 12),
-                _buildField('E‑mail', userJson['email']),
+                _buildField('E‑mail', userJson['userName']),
                 const SizedBox(height: 12),
-                _buildField('Celular', userJson['celular'] ?? '(não informado)'),
+                _buildField('Celular', userJson['phoneNumber'] ?? '(não informado)'),
                 const SizedBox(height: 12),
                 _buildField('CPF', userJson['cpf']),
                 const Spacer(),

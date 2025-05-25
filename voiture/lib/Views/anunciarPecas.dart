@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:voiture/Controlador/ReqResp.dart';
 import 'package:voiture/Modelos/usuario.dart';
-import 'package:voiture/menuPrincipal.dart';
+import 'package:voiture/Views/menuPrincipal.dart';
 import 'package:path/path.dart' as p;
 /*
   - Tela para criar anuncio de peça;

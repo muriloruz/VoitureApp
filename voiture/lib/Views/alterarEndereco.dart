@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:voiture/Controlador/ReqResp.dart';
 import 'package:voiture/Modelos/usuario.dart';
 import 'package:http/http.dart' as http;
-import 'package:voiture/login.dart';
+import 'package:voiture/Modelos/usedSettings.dart' as uS;
+import 'package:voiture/Views/menuPrincipal.dart';
 
 class EnderecoAlterar extends StatelessWidget {
   const EnderecoAlterar({super.key});
@@ -89,15 +90,7 @@ class _CadastroEndVendState extends State<CadastroEndVend> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Alterar Endereço'),
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
+      appBar: uS.UsedAppBar(nome: "Editar Perfil"),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Form(
@@ -209,22 +202,23 @@ class _CadastroEndVendState extends State<CadastroEndVend> {
                   http.Response resp = await r.post("Endereco", body);
                   if (resp.statusCode == 200) {
                     int enderecoId = int.parse(resp.body);
-                    Map<String, dynamic> bodyVend = {
+                    List<Map<String, dynamic>> bodyVend = [{
                       "op": "replace",
                       "path": "/EnderecoId",
                       "value": enderecoId
-                    };
+                    }];
                     http.Response respFinal = await r.patch(
                       "Vendedor/${user.id}",
                       bodyVend,
                     );
-                    if (respFinal.statusCode == 200) {
+                    if (respFinal.statusCode == 204 || respFinal.statusCode == 200) {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const Login()),
+                        MaterialPageRoute(builder: (context) => const MenuPrincipal()),
                       );
                     } else {
-                      _showAlert("Erro", "Falha ao atualizar vendedor.");
+                      _showAlert("Erro", "Falha ao atualizar vendedor.${respFinal.body}, ${respFinal.statusCode}");
+                      print("${respFinal.body}, ${respFinal.statusCode}");
                     }
                   } else {
                     _showAlert("Erro de cadastro",
@@ -236,7 +230,7 @@ class _CadastroEndVendState extends State<CadastroEndVend> {
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                 ),
-                child: const Text('Cadastrar'),
+                child: const Text('Salvar'),
               ),
             ],
           ),

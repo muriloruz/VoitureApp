@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:voiture/Modelos/usedSettings.dart' as uS;
 import 'package:voiture/Modelos/carrinho.dart' as car;
 import 'package:voiture/Modelos/peca.dart';
-import 'package:voiture/perfilPeca.dart';
+import 'package:voiture/Views/perfilPeca.dart';
 import 'package:voiture/Modelos/usuario.dart';
 
 Usuario user = Usuario.instance;

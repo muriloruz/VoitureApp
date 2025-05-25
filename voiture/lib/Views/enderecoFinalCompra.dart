@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:voiture/Controlador/ReqResp.dart';
 import 'package:voiture/Modelos/usuario.dart';
 import 'package:http/http.dart' as http;
-import 'package:voiture/menuPrincipal.dart';
+import 'package:voiture/Views/menuPrincipal.dart';
 
 /* - Essa classe é chamada primeiro no cadastro do vendedor, depois no do usuário quando o mesmo for comprar a peça */
 void main() {
@@ -202,7 +202,7 @@ class _EnderecoFinalCompraState extends State<EnderecoFinalCompra> {
                     Map<String, dynamic> bodyPatchNum = {
                       "op": "replace",
                       "path": "/numeroResid",
-                      "value": _residenciaController.text,
+                      "value": _residenciaController.text, 
                     };
                     http.Response rEnd = await r.patch("usuario/${user.id}", [
                       bodyPatchEnd,
@@ -210,7 +210,7 @@ class _EnderecoFinalCompraState extends State<EnderecoFinalCompra> {
                     http.Response rNum = await r.patch("usuario/${user.id}", [
                       bodyPatchNum,
                     ]);
-                    if(rEnd.statusCode == 200 && rNum.statusCode == 200){
+                    if(rEnd.statusCode == 204 && rNum.statusCode == 204){
                       ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text(
@@ -221,7 +221,8 @@ class _EnderecoFinalCompraState extends State<EnderecoFinalCompra> {
                                 ),
                               );
                       await Future.delayed(const Duration(seconds: 2));
-                      print("ACABOU");
+
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => MenuPrincipal()));
                     }else{
                       print(rNum.statusCode);
                       print(rNum.body);

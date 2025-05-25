@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:voiture/Modelos/usedSettings.dart' as uS;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:voiture/perfilPeca.dart';
+import 'package:voiture/Views/perfilPeca.dart';
 
 
 /*

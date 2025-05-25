@@ -2,12 +2,11 @@ import 'dart:convert'; // Import for json.decode
 
 import 'package:flutter/material.dart';
 import 'package:voiture/Modelos/usuario.dart';
-import 'package:voiture/alterarEndereco.dart';
-import 'package:voiture/cadastroEndVend.dart';
-import 'package:voiture/login.dart';
+import 'package:voiture/Views/alterarEndereco.dart';
 import 'package:voiture/Controlador/ReqResp.dart';
 import 'package:http/http.dart' as http;
-import 'package:voiture/perfilUser.dart';
+import 'package:voiture/Modelos/usedSettings.dart' as uS;
+import 'package:voiture/Views/perfilUser.dart';
 
 void main() {
   runApp(const AlterarDados());
@@ -103,6 +102,8 @@ class _CadastroScreenState extends State<CadastroScreen> {
   }
 
   Future<void> _fetchUserData() async {
+    
+    print(_currentUser.token);
     final String? userId = _currentUser.id;
     if (userId == null) {
       print('User ID is null. Cannot fetch user data.');
@@ -116,16 +117,16 @@ class _CadastroScreenState extends State<CadastroScreen> {
 
     String url;
     if (_tipoUsuario == 'USUARIO') {
-      url = "usuario/single/$userId";
+      url = "usuario/single/";
     } else if (_tipoUsuario == 'VENDEDOR') {
-      url = "Vendedor/$userId";
+      url = "Vendedor/";
     } else {
       print('Unknown user role: $_tipoUsuario');
       return;
     }
 
     try {
-      final http.Response response = await r.get(url);
+      final http.Response response = await r.getByName(url,userId);
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
@@ -219,17 +220,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Editar Perfil'),
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
+      appBar: uS.UsedAppBar(nome: "Editar Perfil"),
       body: SingleChildScrollView(
         controller: _scrollController,
         padding: const EdgeInsets.all(24.0),

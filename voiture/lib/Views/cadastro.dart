@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:voiture/Modelos/usuario.dart';
-import 'package:voiture/cadastroEndVend.dart';
-import 'package:voiture/login.dart';
+import 'package:voiture/Views/cadastroEndVend.dart';
+import 'package:voiture/Views/login.dart';
 import 'package:voiture/Controlador/ReqResp.dart';
 import 'package:http/http.dart' as http;
 

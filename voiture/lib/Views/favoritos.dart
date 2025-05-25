@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:voiture/Controlador/ReqResp.dart';
 import 'dart:convert';
 import 'package:voiture/Modelos/usedSettings.dart' as uS;
-import 'package:voiture/menuPrincipal.dart';
-import 'package:voiture/perfilPeca.dart';
+import 'package:voiture/Views/menuPrincipal.dart';
+import 'package:voiture/Views/perfilPeca.dart';
 
 
 class FavoritosScreen extends StatefulWidget {

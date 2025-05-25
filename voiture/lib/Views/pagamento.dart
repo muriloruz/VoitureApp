@@ -5,7 +5,7 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:voiture/Controlador/ReqResp.dart';
 import 'package:voiture/Modelos/usedSettings.dart' as uS;
 import 'package:voiture/Modelos/usuario.dart';
-import 'package:voiture/enderecoFinalCompra.dart';
+import 'package:voiture/Views/enderecoFinalCompra.dart';
 import 'package:http/http.dart' as http;
 
 class Pagamento extends StatefulWidget {
@@ -331,11 +331,14 @@ class _PagamentoState extends State<Pagamento> {
                       );
                       print(historico.statusCode);
                       print(historico.body);
+                      print(historico.statusCode.runtimeType);
                       if (historico.statusCode == 201) {
                         http.Response peca = await r.delete(
-                          "peca/",
+                          "peca",
                           widget.idPeca,
                         );
+                        print(widget.idPeca);
+                        print(peca.statusCode);
                         if (peca.statusCode == 200 || peca.statusCode == 204) {
                           Navigator.push(
                             context,

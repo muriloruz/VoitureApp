@@ -2,8 +2,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:voiture/Controlador/ReqResp.dart';
-import 'package:voiture/alterarDados.dart';
-import 'package:voiture/menuPrincipal.dart';
+import 'package:voiture/Views/alterarDados.dart';
+import 'package:voiture/Views/alterarPecas.dart';
+import 'package:voiture/Views/menuPrincipal.dart';
 import 'package:voiture/Modelos/usedSettings.dart' as uS;
 
 /*-Classe StateFul (para entender mais, veja a classe "buscarUnicaPeca"), muda quando acionada para buscar os dados do usuario;
@@ -134,16 +135,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      /*
-                          AQUIIIIIIIIIIIIIIIIII
-                          AQUIIIIIIIIIIIIII
-                          AQUIIIIIIIIII
-                          AQUIIIIII
-                          AQUIII
-                       */
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => AlterarPecas()));
                     },
                     
-                    child: const Text('Forma de pagamento',style: TextStyle(fontSize: 12.0)),
+                    child: const Text('Alterar Peças',style: TextStyle(fontSize: 12.0)),
                     
                     
                   ),

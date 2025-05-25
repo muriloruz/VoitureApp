@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:voiture/Controlador/ReqResp.dart';
 import 'package:voiture/Modelos/peca.dart';
 import 'package:voiture/Modelos/usedSettings.dart' as uS;
-import 'package:voiture/menuPrincipal.dart';
-import 'package:voiture/pagamento.dart';
+import 'package:voiture/Views/menuPrincipal.dart';
+import 'package:voiture/Views/pagamento.dart';
 import 'package:http/http.dart' as http;
 import 'package:voiture/Modelos/carrinho.dart' as car;
 

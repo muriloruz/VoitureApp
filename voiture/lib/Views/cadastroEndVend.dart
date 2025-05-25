@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:voiture/Controlador/ReqResp.dart';
 import 'package:voiture/Modelos/usuario.dart';
 import 'package:http/http.dart' as http;
-import 'package:voiture/cadastro.dart';
-import 'package:voiture/login.dart';
+import 'package:voiture/Views/cadastro.dart';
+import 'package:voiture/Views/login.dart';
 
 /* - Essa classe é chamada primeiro no cadastro do vendededor, depois no do usuario quando o mesmo for comprar a peça */
 void main() {
