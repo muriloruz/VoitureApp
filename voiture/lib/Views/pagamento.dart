@@ -10,7 +10,7 @@ import 'package:http/http.dart' as http;
 
 class Pagamento extends StatefulWidget {
   final int idPeca;
-  
+
   final int numeroPecas;
 
   const Pagamento({Key? key, required this.idPeca, required this.numeroPecas})
@@ -65,30 +65,24 @@ class _PagamentoState extends State<Pagamento> {
   bool validarCompra() {
     final ccValidator = CreditCardValidator();
     final cardNumberWithoutSpaces = numCartao.text.replaceAll(' ', '');
-    final cardValidadewhithoutSpaces = validadeController.text.replaceAll(
-      '/',
-      '',
-    );
 
     print('Número do Cartão (com espaços): ${numCartao.text}');
     print('Número do Cartão (sem espaços): $cardNumberWithoutSpaces');
 
     final resultsNum = ccValidator.validateCCNum(cardNumberWithoutSpaces);
-    final resultValidade = ccValidator.validateExpDate(
-      cardValidadewhithoutSpaces,
-    );
+    final resultValidade = ccValidator.validateExpDate(validadeController.text);
     final resultCVV = ccValidator.validateCVV(
       cvvController.text,
       resultsNum.ccType,
     );
-    print('Resultado da Validação: ${resultsNum.isValid}');
-    if (resultCVV.isValid && resultValidade.isValid || resultsNum.isValid) {
+    print('Resultado da Validação: ${resultsNum.isValid}, ${resultCVV.isValid},${resultValidade.isValid}');
+    print(resultValidade);
+    print(validadeController.text);
+    if (resultCVV.isValid && resultValidade.isValid && resultsNum.isValid) {
       print('Bandeira Detectada: ${resultsNum.ccType}');
       return true;
     } else {
-      print(
-        'Número Inválido - Erro: ${resultsNum.message}',
-      ); 
+      print('Número Inválido - Erro: ${resultsNum.message}');
       return false;
     }
   }
@@ -339,7 +333,18 @@ class _PagamentoState extends State<Pagamento> {
                         );
                         print(widget.idPeca);
                         print(peca.statusCode);
-                        if (peca.statusCode == 200 || peca.statusCode == 204) {
+                        if (peca.statusCode == 200 ||
+                            peca.statusCode == 201 ||
+                            peca.statusCode == 204) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Pagamento Aprovado!',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              backgroundColor: Colors.blue,
+                            ),
+                          );
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -354,10 +359,19 @@ class _PagamentoState extends State<Pagamento> {
                     print('Pagamento com Cartão de $metodo aprovado');
                   } else {
                     print(numCartao.text);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Número de cartão inválido'),
-                      ),
+                    showDialog(
+                      context: context,
+                      builder:
+                          (context) => AlertDialog(
+                            title: Text("Erro de Pagamento."),
+                            content: Text("Dados do cartão não são validos, verifique todos os campos e tente novamente"),
+                            actions: [
+                              TextButton(
+                                child: Text('Ok'),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                            ],
+                          ),
                     );
                   }
                 },
@@ -370,7 +384,6 @@ class _PagamentoState extends State<Pagamento> {
           ],
         ),
       ),
-      bottomNavigationBar: uS.UsedBottomNavigationBar(),
     );
   }
 }
