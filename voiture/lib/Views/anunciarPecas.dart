@@ -39,59 +39,38 @@ class _AnunciarPecaScreenState extends State<AnunciarPeca> {
   final TextEditingController _descricaoController = TextEditingController();
   File? _imagemSelecionada; 
   final ImagePicker _picker = ImagePicker();
+  String erroStatus = "" ;
 
   bool pecaCriada = false;
 
 
-  Future<void> enviarPecaComImagem({
-    required BuildContext context,
-    required String nome,
-    required String descricao,
-    required String modelo,
-    required String qntd,
-    required String valor,
-    required String garantia,
-    required File imagemFile,
-    required String vendId,
-  }) async {
+  Future<void> enviarPecaComImagem({required BuildContext context, required String nome, required String descricao, 
+  required String modelo, required String qntd, required String valor, required String garantia, required File imagemFile, 
+  required String vendId,}) async 
+  {
     final uri = Uri.parse("https://192.168.18.61:7101/peca");
-
     final request = http.MultipartRequest('POST', uri);
-
-  
     request.fields['nomePeca'] = nome;
     request.fields['descricao'] = descricao;
     request.fields['garantia'] = garantia;
     request.fields['fabricante'] = modelo;
     request.fields['qntd'] = qntd;
     final valor1 = valor.replaceAll(".", "");
-    print(valor1);
     request.fields['preco'] = valor1;
     request.fields['VendedorId'] = vendId;
-    
     final imagemStream = http.ByteStream(imagemFile.openRead());
     final imagemLength = await imagemFile.length();
-
-    final multipartFile = http.MultipartFile(
-      'imagem', 
-      imagemStream,
-      imagemLength,
-      filename: p.basename(
-        imagemFile.path.isNotEmpty ? imagemFile.path : 'default.jpg',
-      ),
-    );
-
+    final multipartFile = http.MultipartFile('imagem', 
+    imagemStream, imagemLength, filename: p.basename(imagemFile.path.isNotEmpty ? imagemFile.path : 'default.jpg',));
     request.files.add(multipartFile);
-
     final client = createIgnoringCertificateClient();
-
     try {
       final streamedResponse = await client.send(request);
       final response = await http.Response.fromStream(streamedResponse);
-
       if (response.statusCode == 201) {
         pecaCriada = true;
       } else {
+        erroStatus = "Código: ${response.statusCode}, Erro:${response.body}";
         print('Erro ao criar peça. Código: ${response.statusCode}');
         print('Corpo da resposta: ${response.body}');
       }
