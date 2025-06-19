@@ -19,7 +19,7 @@ void main() async {
     isLoggedIn = false;
   } else {
     Usuario user = Usuario.instance;
-    ReqResp r = new ReqResp("https://192.168.18.61:7101",httpClient: createIgnoringCertificateClient());
+    ReqResp r = new ReqResp("https://192.168.53.220:7101",httpClient: createIgnoringCertificateClient());
 
     Map<String, dynamic>? resp = r.decodeJwtToken(token);
     String? userId = resp?['id'];

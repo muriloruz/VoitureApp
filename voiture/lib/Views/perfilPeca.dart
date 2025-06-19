@@ -30,7 +30,7 @@ class _PerfilPecaState extends State<PerfilPeca> {
   String _emailVendedor = 'jacinto.pinto@email.com'; 
   String _telefoneVendedor = '(11) 98765-4321'; 
   String _imagemUrl =
-      'https://192.168.18.61:7101/imagens/1000100451.jpg'; 
+      'https://192.168.53.220:7101/imagens/1000100451.jpg'; 
   bool _isFavorited = false;
 
   @override
@@ -43,7 +43,7 @@ class _PerfilPecaState extends State<PerfilPeca> {
     
     await Future.delayed(const Duration(seconds: 2));
     ReqResp r = new ReqResp(
-      "https://192.168.18.61:7101",
+      "https://192.168.53.220:7101",
       httpClient: createIgnoringCertificateClient(),
     );
     try {
@@ -117,7 +117,7 @@ class _PerfilPecaState extends State<PerfilPeca> {
                     });
                     if (_isFavorited == true && user.role != 'VENDEDOR') {
                       ReqResp r = new ReqResp(
-                        "https://192.168.18.61:7101",
+                        "https://192.168.53.220:7101",
                         httpClient: createIgnoringCertificateClient(),
                       );
                       Map<String, dynamic> body = {
@@ -176,7 +176,7 @@ class _PerfilPecaState extends State<PerfilPeca> {
             SizedBox(
               width: double.infinity,
               child: Image.network(
-                'https://192.168.18.61:7101/imagens/$_imagemUrl',
+                'https://192.168.53.220:7101/imagens/$_imagemUrl',
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return const Icon(

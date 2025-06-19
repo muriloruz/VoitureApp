@@ -16,7 +16,7 @@ void main() {
 
 void getToken() async {
   ReqResp r = ReqResp(
-    "https://192.168.18.61:7101",
+    "https://192.168.53.220:7101",
     httpClient: createIgnoringCertificateClient(),
   );
   final dcPaylod = r.decodeJwtToken(user.token);
@@ -222,7 +222,7 @@ class _LoginPageState extends State<LoginPage> {
                     onPressed: () async {
                       try {
                         ReqResp r = ReqResp(
-                          "https://192.168.18.61:7101",
+                          "https://192.168.53.220:7101",
                           httpClient: createIgnoringCertificateClient(),
                         );
                         final String email = _emailController.text;

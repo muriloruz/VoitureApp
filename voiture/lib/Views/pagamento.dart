@@ -51,7 +51,7 @@ class _PagamentoState extends State<Pagamento> {
 
   void _atualizarTotalCompra() async {
     ReqResp r = ReqResp(
-      "https://192.168.18.61:7101",
+      "https://192.168.53.220:7101",
       httpClient: createIgnoringCertificateClient(),
     );
     http.Response resp = await r.getById("peca/", widget.idPeca);
@@ -65,10 +65,6 @@ class _PagamentoState extends State<Pagamento> {
   bool validarCompra() {
     final ccValidator = CreditCardValidator();
     final cardNumberWithoutSpaces = numCartao.text.replaceAll(' ', '');
-
-    print('Número do Cartão (com espaços): ${numCartao.text}');
-    print('Número do Cartão (sem espaços): $cardNumberWithoutSpaces');
-
     final resultsNum = ccValidator.validateCCNum(cardNumberWithoutSpaces);
     final resultValidade = ccValidator.validateExpDate(validadeController.text);
     final resultCVV = ccValidator.validateCVV(
@@ -290,7 +286,7 @@ class _PagamentoState extends State<Pagamento> {
                     final now = DateTime.now();
                     final isoString = now.toIso8601String();
                     ReqResp r = ReqResp(
-                      "https://192.168.18.61:7101",
+                      "https://192.168.53.220:7101",
                       httpClient: createIgnoringCertificateClient(),
                     );
                     print(user.id);

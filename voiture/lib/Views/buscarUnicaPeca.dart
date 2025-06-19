@@ -38,7 +38,7 @@ class _BuscarUnicaPecaState extends State<BuscarUnicaPeca> {
       _pecas = [];
     });
 
-    final String url = 'https://192.168.18.61:7101/peca/$termoBusca';
+    final String url = 'https://192.168.53.220:7101/peca/$termoBusca';
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -144,7 +144,7 @@ class _BuscarUnicaPecaState extends State<BuscarUnicaPeca> {
                                         width: 100,
                                         height: 120,
                                         child: Image.network(
-                                          'https://192.168.18.61:7101/imagens/${peca['imagem']}',
+                                          'https://192.168.53.220:7101/imagens/${peca['imagem']}',
                                           fit: BoxFit.cover,
                                           errorBuilder: (
                                             context,

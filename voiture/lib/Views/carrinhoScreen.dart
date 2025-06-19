@@ -116,7 +116,7 @@ class _CarrinhoScreenState extends State<CarrinhoScreen> {
                                         width: 100,
                                         height: 120,
                                         child: Image.network(
-                                          'https://192.168.18.61:7101/imagens/${peca.imagemFile}',
+                                          'https://192.168.53.220:7101/imagens/${peca.imagemFile}',
                                           fit: BoxFit.cover,
                                           errorBuilder: (
                                             context,

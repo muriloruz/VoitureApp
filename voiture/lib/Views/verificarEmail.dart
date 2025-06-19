@@ -125,7 +125,7 @@ class _VerificarEmailState extends State<VerificarEmail> {
                       _documentFormatter.getUnmaskedText();
                   if (widget.role == "VENDEDOR") {
                     ReqResp r = new ReqResp(
-                      "https://192.168.18.61:7101",
+                      "https://192.168.53.220:7101",
                       httpClient: createIgnoringCertificateClient(),
                     );
                     Map<String, dynamic> body = {
@@ -166,7 +166,7 @@ class _VerificarEmailState extends State<VerificarEmail> {
                     }
                   } else if (widget.role == "USUARIO") {
                     ReqResp r = new ReqResp(
-                      "https://192.168.18.61:7101",
+                      "https://192.168.53.220:7101",
                       httpClient: createIgnoringCertificateClient(),
                     );
                     Map<String, dynamic> body = {

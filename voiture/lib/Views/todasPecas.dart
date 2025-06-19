@@ -28,7 +28,7 @@ class _BuscarTdsPecaState extends State<BuscarTdsPeca> {
       _errorMessage = '';
       _pecas = [];
     });
-    const String url = 'https://192.168.18.61:7101';
+    const String url = 'https://192.168.53.220:7101';
     ReqResp r = ReqResp(url, httpClient: createIgnoringCertificateClient());
     try {
       final http.Response response = await r.get("peca");
@@ -119,7 +119,7 @@ class _BuscarTdsPecaState extends State<BuscarTdsPeca> {
                                     height: 80,
 
                                     child: Image.network(
-                                      'https://192.168.18.61:7101/imagens/${peca['imagem']}',
+                                      'https://192.168.53.220:7101/imagens/${peca['imagem']}',
                                       fit: BoxFit.cover,
                                       errorBuilder: (
                                         context,

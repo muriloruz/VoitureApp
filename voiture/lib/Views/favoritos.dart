@@ -25,7 +25,7 @@ class _FavoritosScreenState extends State<FavoritosScreen> {
   Future<void> _buscarPecasFavoritas() async {
     setState(() => _isLoading = true);
     ReqResp r = new ReqResp(
-      "https://192.168.18.61:7101",
+      "https://192.168.53.220:7101",
       httpClient: createIgnoringCertificateClient(),
     );
     try {
@@ -98,7 +98,7 @@ class _FavoritosScreenState extends State<FavoritosScreen> {
                           width: 80,
                           height: 80,
                           child: Image.network(
-                            'https://192.168.18.61:7101/imagens/${p['imagem']}',
+                            'https://192.168.53.220:7101/imagens/${p['imagem']}',
                             fit: BoxFit.cover,
                             errorBuilder:
                                 (_, __, ___) =>
@@ -121,7 +121,7 @@ class _FavoritosScreenState extends State<FavoritosScreen> {
                           onPressed: () async {
                             final client2 = createIgnoringCertificateClient();
                             final r2 = ReqResp(
-                              'https://192.168.18.61:7101',
+                              'https://192.168.53.220:7101',
                               httpClient: client2,
                             );
                             await r2.delete("favorito", p['id']);

@@ -71,14 +71,7 @@ class ReqResp {
   }
 }
 
-
-
 }
-
-
-
-
-
 
 http.Client createIgnoringCertificateClient() {
   final httpClient = HttpClient()

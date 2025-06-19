@@ -43,8 +43,8 @@ class _AtualizarPecaScreenState extends State<AtualizarPeca> {
   bool _isLoading = true;
   String? _currentImageFilename;
 
-  static const String _imageBaseUrl = "https://192.168.18.61:7101/imagens/";
-  static const String _apiBaseUrl = "https://192.168.18.61:7101";
+  static const String _imageBaseUrl = "https://192.168.53.220:7101/imagens/";
+  static const String _apiBaseUrl = "https://192.168.53.220:7101";
 
 
   @override

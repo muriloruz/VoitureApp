@@ -293,23 +293,15 @@ class _CadastroScreenState extends State<CadastroScreen> {
                                 );
                               } else {
                                 void cad() async {
-                                  ReqResp r = ReqResp(
-                                    "https://192.168.18.61:7101",
-                                    httpClient:
-                                        createIgnoringCertificateClient(),
-                                  );
+                                  ReqResp r = ReqResp("https://192.168.53.220:7101",httpClient:createIgnoringCertificateClient(),);
                                   Map<String, dynamic> body = {
                                     'UserName': _emailController.text,
                                     'Nome': _nomeController.text,
                                     'cpf': _cpfCnpjController.text,
                                     'Password': _passwordController.text,
                                     'ConfSenha': _rPasswordController.text,
-                                    'email': _emailController.text,
                                   };
-                                  http.Response resposta = await r.post(
-                                    "usuario/",
-                                    body,
-                                  );
+                                  http.Response resposta = await r.post("usuario/",body,);
                                   if (resposta.statusCode == 200) {
                                     Navigator.push(
                                       context,
@@ -411,7 +403,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
                                 );
                               } else {
                                 ReqResp r = ReqResp(
-                                  "https://192.168.18.61:7101",
+                                  "https://192.168.53.220:7101",
                                   httpClient: createIgnoringCertificateClient(),
                                 );
                                 http.Response resp = await r.getByName(

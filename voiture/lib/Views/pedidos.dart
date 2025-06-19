@@ -25,63 +25,64 @@ class _PedidosScreenState extends State<PedidosScreen> {
     super.initState();
     _fetchPedidos();
   }
-  Future<void>_buscarPecasPorNome(String nome) async {
-      try {
-        ReqResp r = ReqResp(
-          "https://192.168.18.61:7101",
-          httpClient: createIgnoringCertificateClient(),
-        );
 
-        final response = await r.get("VendedorCliente/pecas/$nome");
+  Future<void> _buscarPecasPorNome(String nome) async {
+    try {
+      ReqResp r = ReqResp(
+        "https://192.168.53.220:7101",
+        httpClient: createIgnoringCertificateClient(),
+      );
 
-        if (response.statusCode == 200) {
-          final decoded = json.decode(response.body);
-          setState(() {
-            _pecas = decoded is List ? decoded : [decoded];
-            _errorMessage = null;
-          });
-        } else if (response.statusCode == 404) {
-          setState(() {
-            _pecas = [];
-            _errorMessage = 'Nenhuma peça encontrada';
-          });
-        } else {
-          setState(() {
-            _errorMessage = 'Erro ao buscar: ${response.statusCode}';
-          });
-        }
-      } catch (e) {
+      final response = await r.get("VendedorCliente/pecas/$nome");
+
+      if (response.statusCode == 200) {
+        final decoded = json.decode(response.body);
         setState(() {
-          _errorMessage = 'Erro ao buscar: $e';
+          _pecas = decoded is List ? decoded : [decoded];
+          _errorMessage = null;
+        });
+      } else if (response.statusCode == 404) {
+        setState(() {
+          _pecas = [];
+          _errorMessage = 'Nenhuma peça encontrada';
+        });
+      } else {
+        setState(() {
+          _errorMessage = 'Erro ao buscar: ${response.statusCode}';
         });
       }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Erro ao buscar: $e';
+      });
     }
+  }
+
   Future<void> _fetchPedidos() async {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
     try {
-      ReqResp r = new ReqResp(
-        "https://192.168.18.61:7101",
+      ReqResp r = ReqResp(
+        "https://192.168.53.220:7101",
         httpClient: createIgnoringCertificateClient(),
       );
       http.Response response = await r.getByName("VendedorCliente/", user.id);
+
       if (user.role == 'VENDEDOR') {
         setState(() {
-          _errorMessage = 'Vendedores não possuem historico de compras';
+          _errorMessage = 'Vendedores não possuem histórico de compras';
         });
       } else {
         if (response.statusCode == 200) {
           final dynamic decodedData = json.decode(response.body);
-          if (decodedData is List) {
-            _pecas = decodedData;
-            print("foi aqui");
-          } else if (decodedData is Map<String, dynamic>) {
-            print("foi aqui 222");
-            _pecas = [decodedData];
+          if (decodedData is Map<String, dynamic> &&
+              decodedData['vendedor'] != null) {
+            _pecas = decodedData['vendedor']['pecas'] ?? [];
+          } else {
+            _pecas = [];
           }
-
           setState(() {});
         } else {
           setState(() {
@@ -127,10 +128,10 @@ class _PedidosScreenState extends State<PedidosScreen> {
                 ),
                 onSubmitted: (query) {
                   if (query.isEmpty) {
-                    _fetchPedidos(); 
+                    _fetchPedidos();
                   } else {
                     final value = Uri.encodeComponent(query);
-                    _buscarPecasPorNome(value); 
+                    _buscarPecasPorNome(value);
                   }
                 },
               ),
@@ -157,14 +158,13 @@ class _PedidosScreenState extends State<PedidosScreen> {
                           margin: const EdgeInsets.all(8.0),
                           child: InkWell(
                             onTap: () {
-                              print(peca['peca']['id']);
+                              print(peca['id']);
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder:
-                                      (context) => PerfilPedidos(
-                                        idPeca: peca['peca']['id'],
-                                      ),
+                                      (context) =>
+                                          PerfilPedidos(idPeca: peca['id']),
                                 ),
                               );
                             },
@@ -173,7 +173,7 @@ class _PedidosScreenState extends State<PedidosScreen> {
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  if (peca['peca']['imagem'] != null)
+                                  if (peca['imagem'] != null)
                                     Padding(
                                       padding: const EdgeInsets.only(
                                         right: 16.0,
@@ -182,7 +182,7 @@ class _PedidosScreenState extends State<PedidosScreen> {
                                         width: 100,
                                         height: 120,
                                         child: Image.network(
-                                          'https://192.168.18.61:7101/imagens/${peca['peca']['imagem']}',
+                                          'https://192.168.53.220:7101/imagens/${peca['imagem']}',
                                           fit: BoxFit.cover,
                                           errorBuilder: (
                                             context,
@@ -202,7 +202,7 @@ class _PedidosScreenState extends State<PedidosScreen> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          peca['peca']['nomePeca'] ??
+                                          peca['nomePeca'] ??
                                               'Nome Indisponível',
                                           style: const TextStyle(
                                             fontWeight: FontWeight.bold,
@@ -210,13 +210,13 @@ class _PedidosScreenState extends State<PedidosScreen> {
                                         ),
                                         const SizedBox(height: 8),
                                         Text(
-                                          'Descrição: ${peca['peca']['descricao'] ?? 'Indisponível'}',
+                                          'Descrição: ${peca['descricao'] ?? 'Indisponível'}',
                                         ),
                                         Text(
-                                          'Preço: ${(peca['peca']['preco'] ?? 0.0).toStringAsFixed(2)}',
+                                          'Preço: ${(peca['preco'] ?? 0.0).toStringAsFixed(2)}',
                                         ),
                                         Text(
-                                          'Garantia: ${peca['peca']['garantia'] ?? 'Não Informada'}',
+                                          'Garantia: ${peca['garantia'] ?? 'Não Informada'}',
                                         ),
                                       ],
                                     ),

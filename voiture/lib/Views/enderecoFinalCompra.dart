@@ -181,7 +181,7 @@ class _EnderecoFinalCompraState extends State<EnderecoFinalCompra> {
                 onPressed: () async {
                   Usuario user = Usuario.instance;
                   ReqResp r = ReqResp(
-                    "https://192.168.18.61:7101",
+                    "https://192.168.53.220:7101",
                     httpClient: createIgnoringCertificateClient(),
                   );
                   Map<String, dynamic> body = {
@@ -194,23 +194,23 @@ class _EnderecoFinalCompraState extends State<EnderecoFinalCompra> {
                   http.Response resp = await r.post("Endereco", body);
 
                   if (resp.statusCode == 200) {
-                    Map<String, dynamic> bodyPatchEnd = {
-                      "op": "replace",
-                      "path": "/EnderecoId",
-                      "value": resp.body,
-                    };
-                    Map<String, dynamic> bodyPatchNum = {
-                      "op": "replace",
-                      "path": "/numeroResid",
-                      "value": _residenciaController.text, 
-                    };
-                    http.Response rEnd = await r.patch("usuario/${user.id}", [
-                      bodyPatchEnd,
-                    ]);
-                    http.Response rNum = await r.patch("usuario/${user.id}", [
-                      bodyPatchNum,
-                    ]);
-                    if(rEnd.statusCode == 204 && rNum.statusCode == 204){
+                    List<Map<String, dynamic>> bodyPatch = [
+                      {
+                        "op": "replace",
+                        "path": "/EnderecoId",
+                        "value": resp.body,
+                      },
+                      {
+                        "op": "replace",
+                        "path": "/numeroResid",
+                        "value": _residenciaController.text, 
+                      }
+                    ];
+                    http.Response response = await r.patch(
+                      "usuario/${user.id}",
+                      bodyPatch, 
+                    );
+                    if(response.statusCode == 204){
                       ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text(
@@ -224,10 +224,8 @@ class _EnderecoFinalCompraState extends State<EnderecoFinalCompra> {
 
                       Navigator.push(context, MaterialPageRoute(builder: (context) => MenuPrincipal()));
                     }else{
-                      print(rNum.statusCode);
-                      print(rNum.body);
-                      print(rEnd.statusCode);
-                      print(rEnd.body);
+                      print(response.statusCode);
+                      print(response.body);
                     }
                   } else {
                     showDialog(

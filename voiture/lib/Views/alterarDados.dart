@@ -111,7 +111,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
     }
 
     ReqResp r = ReqResp(
-      "https://192.168.18.61:7101",
+      "https://192.168.53.220:7101",
       httpClient: createIgnoringCertificateClient(),
     );
 
@@ -305,7 +305,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
                     }
 
                     ReqResp r = ReqResp(
-                      "https://192.168.18.61:7101",
+                      "https://192.168.53.220:7101",
                       httpClient: createIgnoringCertificateClient(),
                     );
 
