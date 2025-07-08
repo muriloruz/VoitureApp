@@ -36,7 +36,7 @@ class _AlterarSenhaState extends State<AlterarSenha> {
       print('Confirmar Senha: $confirmarSenha');
       if (widget.role == 'USUARIO') {
         ReqResp r = new ReqResp(
-          "https://192.168.53.220:7101",
+          "https://192.168.94.220:7101",
           httpClient: createIgnoringCertificateClient(),
         );
         Map<String, dynamic> body = {
@@ -58,7 +58,7 @@ class _AlterarSenhaState extends State<AlterarSenha> {
         }
       }else if(widget.role == 'VENDEDOR'){
         ReqResp r = new ReqResp(
-          "https://192.168.53.220:7101",
+          "https://192.168.94.220:7101",
           httpClient: createIgnoringCertificateClient(),
         );
         Map<String, dynamic> body = {

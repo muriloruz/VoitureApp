@@ -13,10 +13,22 @@ void main() {
   runApp(const Login());
 }
 /* Primeira tela complexa que aparece quando o usuario, ela usa a classe ReqResp para requisição na API */
-
+Future<http.Response?> _tryLogin(
+  ReqResp r, 
+  String endpoint, 
+  Map<String, dynamic> data
+) async {
+  try {
+    final response = await r.post(endpoint, data);
+    if (response.statusCode == 200) return response;
+    return null;
+  } catch (e) {
+    return null;
+  }
+}
 void getToken() async {
   ReqResp r = ReqResp(
-    "https://192.168.53.220:7101",
+    "https://192.168.94.220:7101",
     httpClient: createIgnoringCertificateClient(),
   );
   final dcPaylod = r.decodeJwtToken(user.token);
@@ -186,16 +198,17 @@ class _LoginPageState extends State<LoginPage> {
                         children: <Widget>[
                           Checkbox(
                             value: valor,
-                            fillColor :  MaterialStateProperty.resolveWith<Color>((states) {
-                            if (states.contains(MaterialState.selected)) {
-                              return Colors.blue;
-                            }
-                              return Colors.white;
-                            }),
+                            fillColor: MaterialStateProperty.resolveWith<Color>(
+                              (states) {
+                                if (states.contains(MaterialState.selected)) {
+                                  return Colors.blue;
+                                }
+                                return Colors.white;
+                              },
+                            ),
                             checkColor: Colors.white,
                             onChanged: (bool? novoValor) {
                               setState(() {
-                                
                                 valor = novoValor ?? false;
                               });
                             },
@@ -208,7 +221,12 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => t.TipoUser()));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => t.TipoUser(),
+                            ),
+                          );
                         },
                         child: const Text(
                           'Esqueci minha senha',
@@ -220,111 +238,56 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 32.0),
                   ElevatedButton(
                     onPressed: () async {
-                      try {
-                        ReqResp r = ReqResp(
-                          "https://192.168.53.220:7101",
-                          httpClient: createIgnoringCertificateClient(),
-                        );
-                        final String email = _emailController.text;
-                        final String password = _passwordController.text;
-                        final Map<String, dynamic> loginData = {
-                          'email': email,
-                          'password': password,
-                        };
-                        final http.Response response = await r.post(
-                          'usuario/login',
-                          loginData,
-                        );
-                        if (response.statusCode == 200) {
-                          Usuario user = Usuario.instance;
-                          user.token = response.body;
-                          getToken();
-                          final prefs = await shp.SharedPreferences.getInstance();
-                          if (valor == true) {
-                            await prefs.setString('token', user.token);
-                          }else{
-                            await prefs.remove('token');
-                          }
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const MenuPrincipal(),
-                            ),
-                          );
-                          await Future.delayed(Duration(seconds: 2));
-                        } else if (response.statusCode == 400) {
-                          showDialog(
-                            context: context,
-                            builder:
-                                (context) => AlertDialog(
-                                  title: Text("Erro de login"),
-                                  content: Text(
-                                    "Verifique se digitou todos os campos",
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      child: Text('Ok'),
-                                      onPressed: () => Navigator.pop(context),
-                                    ),
-                                  ],
-                                ),
-                          );
-                          await Future.delayed(Duration(seconds: 2));
-                        } else if (response.statusCode == 404) {
-                          if (response.body == "Email não encontrado") {
-                            showDialog(
-                              context: context,
-                              builder:
-                                  (context) => AlertDialog(
-                                    title: Text("Erro de login"),
-                                    content: Text("Verifique o campo de Email"),
-                                    actions: [
-                                      TextButton(
-                                        child: Text('Ok'),
-                                        onPressed: () => Navigator.pop(context),
-                                      ),
-                                    ],
-                                  ),
-                            );
-                            await Future.delayed(Duration(seconds: 2));
-                          } else {
-                            showDialog(
-                              context: context,
-                              builder:
-                                  (context) => AlertDialog(
-                                    title: Text("Erro de login"),
-                                    content: Text("Verifique o campo de Senha"),
-                                    actions: [
-                                      TextButton(
-                                        child: Text('Ok'),
-                                        onPressed: () => Navigator.pop(context),
-                                      ),
-                                    ],
-                                  ),
-                            );
-                            await Future.delayed(Duration(seconds: 2));
-                          }
+                      final email = _emailController.text;
+                      final password = _passwordController.text;
+                      final r = ReqResp(
+                        "https://192.168.94.220:7101",
+                        httpClient: createIgnoringCertificateClient(),
+                      );
+                      var response = await _tryLogin(r, 'usuario/login', {
+                        'email': email,
+                        'password': password,
+                      });
+                      if (response == null) {
+                        response = await _tryLogin(r, 'Vendedor/login', {
+                          'UserName': email,
+                          'Password': password,
+                        });
+                        print(response);
+                      }
+                      if (response != null && response.statusCode == 200) {
+                        Usuario user = Usuario.instance;
+                        user.token = response.body;
+                        getToken(); 
+
+                        final prefs = await shp.SharedPreferences.getInstance();
+                        if (valor) {
+                          await prefs.setString('token', user.token);
+                        } else {
+                          await prefs.remove('token');
                         }
-                      } catch (err) {
-                        if (err is TypeError) {
-                          showDialog(
-                            context: context,
-                            builder:
-                                (context) => AlertDialog(
-                                  title: Text("Erro de login"),
-                                  content: Text(
-                                    "Verifique se digitou todos os campos",
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MenuPrincipal(),
+                          ),
+                        );
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder:
+                              (context) => AlertDialog(
+                                title: const Text("Erro de login"),
+                                content: const Text("Credenciais inválidas"),
+                                actions: [
+                                  TextButton(
+                                    child: const Text('Ok'),
+                                    onPressed: () => Navigator.pop(context),
                                   ),
-                                  actions: [
-                                    TextButton(
-                                      child: Text('Ok'),
-                                      onPressed: () => Navigator.pop(context),
-                                    ),
-                                  ],
-                                ),
-                          );
-                          await Future.delayed(Duration(seconds: 2));
-                        }
+                                ],
+                              ),
+                        );
                       }
                     },
                     child: const Text('Acessar'),

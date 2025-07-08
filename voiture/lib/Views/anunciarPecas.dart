@@ -48,7 +48,7 @@ class _AnunciarPecaScreenState extends State<AnunciarPeca> {
   required String modelo, required String qntd, required String valor, required String garantia, required File imagemFile, 
   required String vendId,}) async 
   {
-    final uri = Uri.parse("https://192.168.53.220:7101/peca");
+    final uri = Uri.parse("https://192.168.94.220:7101/peca");
     final request = http.MultipartRequest('POST', uri);
     request.fields['nomePeca'] = nome;
     request.fields['descricao'] = descricao;

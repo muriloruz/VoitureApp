@@ -181,7 +181,7 @@ class _EnderecoFinalCompraState extends State<EnderecoFinalCompra> {
                 onPressed: () async {
                   Usuario user = Usuario.instance;
                   ReqResp r = ReqResp(
-                    "https://192.168.53.220:7101",
+                    "https://192.168.94.220:7101",
                     httpClient: createIgnoringCertificateClient(),
                   );
                   Map<String, dynamic> body = {

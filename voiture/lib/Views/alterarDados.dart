@@ -111,7 +111,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
     }
 
     ReqResp r = ReqResp(
-      "https://192.168.53.220:7101",
+      "https://192.168.94.220:7101",
       httpClient: createIgnoringCertificateClient(),
     );
 
@@ -305,7 +305,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
                     }
 
                     ReqResp r = ReqResp(
-                      "https://192.168.53.220:7101",
+                      "https://192.168.94.220:7101",
                       httpClient: createIgnoringCertificateClient(),
                     );
 
@@ -330,6 +330,11 @@ class _CadastroScreenState extends State<CadastroScreen> {
                         {
                           "op": "replace",
                           "path": "/userName",
+                          "value": _emailController.text,
+                        },
+                        {
+                          "op": "replace",
+                          "path": "/Email",
                           "value": _emailController.text,
                         },
                         if (_tipoUsuario == "USUARIO")

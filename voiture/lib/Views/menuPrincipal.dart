@@ -17,7 +17,7 @@ Usuario user = Usuario.instance;
 
 Future<String> getToken() async {
   ReqResp r = ReqResp(
-    "https://192.168.53.220:7101",
+    "https://192.168.94.220:7101",
     httpClient: createIgnoringCertificateClient(),
   );
   final dcPaylod = r.decodeJwtToken(user.token);
@@ -47,7 +47,7 @@ void getRoleUser() async {
   var id = await getToken();
   print(id);
   ReqResp r = ReqResp(
-    "https://192.168.53.220:7101",
+    "https://192.168.94.220:7101",
     httpClient: createIgnoringCertificateClient(),
   );
   final http.Response resp = await r.getByName("usuario/getRole/", id);

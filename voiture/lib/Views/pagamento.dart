@@ -51,7 +51,7 @@ class _PagamentoState extends State<Pagamento> {
 
   void _atualizarTotalCompra() async {
     ReqResp r = ReqResp(
-      "https://192.168.53.220:7101",
+      "https://192.168.94.220:7101",
       httpClient: createIgnoringCertificateClient(),
     );
     http.Response resp = await r.getById("peca/", widget.idPeca);
@@ -286,7 +286,7 @@ class _PagamentoState extends State<Pagamento> {
                     final now = DateTime.now();
                     final isoString = now.toIso8601String();
                     ReqResp r = ReqResp(
-                      "https://192.168.53.220:7101",
+                      "https://192.168.94.220:7101",
                       httpClient: createIgnoringCertificateClient(),
                     );
                     print(user.id);

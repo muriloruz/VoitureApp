@@ -293,7 +293,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
                                 );
                               } else {
                                 void cad() async {
-                                  ReqResp r = ReqResp("https://192.168.53.220:7101",httpClient:createIgnoringCertificateClient(),);
+                                  ReqResp r = ReqResp("https://192.168.94.220:7101",httpClient:createIgnoringCertificateClient(),);
                                   Map<String, dynamic> body = {
                                     'UserName': _emailController.text,
                                     'Nome': _nomeController.text,
@@ -403,7 +403,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
                                 );
                               } else {
                                 ReqResp r = ReqResp(
-                                  "https://192.168.53.220:7101",
+                                  "https://192.168.94.220:7101",
                                   httpClient: createIgnoringCertificateClient(),
                                 );
                                 http.Response resp = await r.getByName(

@@ -24,7 +24,7 @@ class _AlterarPecasState extends State<AlterarPecas> {
   Future<void> _buscarPecas() async {
   setState(() => _isLoading = true);
   final r = ReqResp(
-    "https://192.168.53.220:7101",
+    "https://192.168.94.220:7101",
     httpClient: createIgnoringCertificateClient(),
   );
 
@@ -107,7 +107,7 @@ class _AlterarPecasState extends State<AlterarPecas> {
                                 width: 80,
                                 height: 80,
                                 child: Image.network(
-                                  'https://192.168.53.220:7101/imagens/${p['imagem']}',
+                                  'https://192.168.94.220:7101/imagens/${p['imagem']}',
                                   fit: BoxFit.cover,
                                   errorBuilder: (_, __, ___) =>
                                       const Icon(Icons.image_not_supported),
@@ -128,7 +128,7 @@ class _AlterarPecasState extends State<AlterarPecas> {
                                 icon: const Icon(Icons.delete, color: Colors.red),
                                 onPressed: () async {
                                   final r2 = ReqResp(
-                                    'https://192.168.53.220:7101',
+                                    'https://192.168.94.220:7101',
                                     httpClient: createIgnoringCertificateClient(),
                                   );
                                   await r2.delete("peca/apagar", p['id']);

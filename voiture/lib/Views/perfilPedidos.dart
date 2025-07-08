@@ -43,7 +43,7 @@ class _PerfilPedidosState extends State<PerfilPedidos> {
       _isLoading = true;
     });
     ReqResp r = ReqResp(
-      "https://192.168.53.220:7101",
+      "https://192.168.94.220:7101",
       httpClient: createIgnoringCertificateClient(),
     );
     try {
@@ -119,7 +119,7 @@ class _PerfilPedidosState extends State<PerfilPedidos> {
                   SizedBox(
                     width: double.infinity,
                     child: Image.network(
-                      'https://192.168.53.220:7101/imagens/$_imagemUrl',
+                      'https://192.168.94.220:7101/imagens/$_imagemUrl',
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return const Icon(

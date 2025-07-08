@@ -29,7 +29,7 @@ class _PedidosScreenState extends State<PedidosScreen> {
   Future<void> _buscarPecasPorNome(String nome) async {
     try {
       ReqResp r = ReqResp(
-        "https://192.168.53.220:7101",
+        "https://192.168.94.220:7101",
         httpClient: createIgnoringCertificateClient(),
       );
 
@@ -65,7 +65,7 @@ class _PedidosScreenState extends State<PedidosScreen> {
     });
     try {
       ReqResp r = ReqResp(
-        "https://192.168.53.220:7101",
+        "https://192.168.94.220:7101",
         httpClient: createIgnoringCertificateClient(),
       );
       http.Response response = await r.getByName("VendedorCliente/", user.id);
@@ -182,7 +182,7 @@ class _PedidosScreenState extends State<PedidosScreen> {
                                         width: 100,
                                         height: 120,
                                         child: Image.network(
-                                          'https://192.168.53.220:7101/imagens/${peca['imagem']}',
+                                          'https://192.168.94.220:7101/imagens/${peca['imagem']}',
                                           fit: BoxFit.cover,
                                           errorBuilder: (
                                             context,
